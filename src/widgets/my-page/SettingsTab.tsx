@@ -1,0 +1,314 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
+import { AUTH_ME_QUERY_KEY } from '@/features/auth/model/useCurrentUser'
+import type { AuthUser } from '@/features/auth/model/types'
+import { Check, Loader2, LogOut, Pencil, UserX } from 'lucide-react'
+import { Button } from '@/shared/ui/button'
+import { Input } from '@/shared/ui/input'
+import { Label } from '@/shared/ui/label'
+import { Switch } from '@/shared/ui/switch'
+import { Separator } from '@/shared/ui/separator'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/shared/ui/alert-dialog'
+import { toast } from 'sonner'
+import { AccountDeleteDialog } from './AccountDeleteDialog'
+import { logout, updateConsents, updateName } from '@/features/auth/api'
+import { tokenStore } from '@/shared/api'
+import type { User } from '@/shared/types'
+
+interface SettingsTabProps {
+  user: User
+  initialConsents?: {
+    marketingConsent: boolean
+    pushConsent: boolean
+    smsConsent: boolean
+  }
+}
+
+export function SettingsTab({ user, initialConsents }: SettingsTabProps) {
+  const router = useRouter()
+  const queryClient = useQueryClient()
+
+  // Profile editing
+  const [isEditing, setIsEditing] = useState(false)
+  const [editName, setEditName] = useState(user.name)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
+
+  // Notification toggles
+  const [marketingConsent, setMarketingConsent] = useState(initialConsents?.marketingConsent ?? false)
+  const [pushNotifications, setPushNotifications] = useState(initialConsents?.pushConsent ?? false)
+  const [smsNotifications, setSmsNotifications] = useState(initialConsents?.smsConsent ?? false)
+  const handleConsentChange = async (
+    field: 'marketing' | 'push' | 'sms',
+    value: boolean,
+  ) => {
+    const next = {
+      marketingConsent: field === 'marketing' ? value : marketingConsent,
+      pushConsent: field === 'push' ? value : pushNotifications,
+      smsConsent: field === 'sms' ? value : smsNotifications,
+    }
+    if (field === 'marketing') setMarketingConsent(value)
+    else if (field === 'push') setPushNotifications(value)
+    else setSmsNotifications(value)
+
+    try {
+      await updateConsents(next)
+      queryClient.setQueryData<AuthUser>(AUTH_ME_QUERY_KEY, (prev) =>
+        prev ? { ...prev, ...next } : prev,
+      )
+    } catch {
+      if (field === 'marketing') setMarketingConsent(!value)
+      else if (field === 'push') setPushNotifications(!value)
+      else setSmsNotifications(!value)
+      toast.error('알림 설정 저장에 실패했습니다.')
+    }
+  }
+
+  // Account action dialogs
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+
+  // Sync edit fields when user data changes externally
+  useEffect(() => {
+    if (!isEditing) {
+      const t = setTimeout(() => {
+        setEditName(user.name)
+      }, 0)
+      return () => clearTimeout(t)
+    }
+  }, [user.name, isEditing])
+
+  const handleStartEdit = () => {
+    setEditName(user.name)
+    setSaveSuccess(false)
+    setIsEditing(true)
+  }
+
+  const handleCancelEdit = () => {
+    setEditName(user.name)
+    setIsEditing(false)
+  }
+
+  const handleSave = async () => {
+    setIsSaving(true)
+
+    try {
+      await updateName(editName)
+      queryClient.setQueryData<AuthUser>(AUTH_ME_QUERY_KEY, (prev) =>
+        prev ? { ...prev, name: editName } : prev,
+      )
+      setIsEditing(false)
+      setSaveSuccess(true)
+      setTimeout(() => setSaveSuccess(false), 2000)
+    } catch {
+      toast.error('이름 저장에 실패했습니다.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* Section 1: Profile */}
+      <section className="space-y-4">
+        <h3 className="text-base font-semibold">프로필 정보</h3>
+
+        {!isEditing ? (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">이름</p>
+                <p className="text-sm font-medium">{user.name}</p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleStartEdit}
+                className="gap-1.5"
+              >
+                <Pencil size={14} />
+                수정
+              </Button>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">이메일</p>
+              <p className="text-sm font-medium">{user.email}</p>
+            </div>
+            {saveSuccess && (
+              <p className="flex items-center gap-1.5 text-sm text-green-600">
+                <Check size={14} />
+                저장되었습니다
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-name">이름</Label>
+              <Input
+                id="edit-name"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                disabled={isSaving}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-email">이메일</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={user.email}
+                readOnly
+                className="bg-muted text-muted-foreground cursor-not-allowed"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={handleCancelEdit} disabled={isSaving}>
+                취소
+              </Button>
+              <Button size="sm" onClick={handleSave} disabled={isSaving || !editName.trim()} className="gap-1.5">
+                {isSaving ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" />
+                    저장 중...
+                  </>
+                ) : (
+                  '저장'
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+      </section>
+
+      <Separator />
+
+      {/* Section 2: Notification Settings */}
+      <section className="space-y-4">
+        <h3 className="text-base font-semibold">알림 설정</h3>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-0.5">
+              <Label htmlFor="marketing">마케팅 수신 동의</Label>
+              <p className="text-sm text-muted-foreground">
+                프로모션 및 이벤트 정보를 받습니다
+              </p>
+            </div>
+            <Switch
+              id="marketing"
+              checked={marketingConsent}
+
+              onCheckedChange={(v) => handleConsentChange('marketing', v)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-0.5">
+              <Label htmlFor="push">푸시 알림</Label>
+              <p className="text-sm text-muted-foreground">
+                예매, 양도 등 중요 알림을 받습니다
+              </p>
+            </div>
+            <Switch
+              id="push"
+              checked={pushNotifications}
+
+              onCheckedChange={(v) => handleConsentChange('push', v)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-0.5">
+              <Label htmlFor="sms">SMS 알림</Label>
+              <p className="text-sm text-muted-foreground">
+                문자로 알림을 받습니다
+              </p>
+            </div>
+            <Switch
+              id="sms"
+              checked={smsNotifications}
+
+              onCheckedChange={(v) => handleConsentChange('sms', v)}
+            />
+          </div>
+        </div>
+      </section>
+
+      <Separator />
+
+      {/* Section 3: Account Actions */}
+      <section className="space-y-4">
+        <h3 className="text-base font-semibold">계정 관리</h3>
+
+        <div className="flex flex-col gap-3 items-start">
+          <Button
+            variant="outline"
+            onClick={() => setLogoutDialogOpen(true)}
+            className="gap-2"
+          >
+            <LogOut size={16} />
+            로그아웃
+          </Button>
+
+          <Button
+            variant="ghost"
+            onClick={() => setDeleteDialogOpen(true)}
+            className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+          >
+            <UserX size={16} />
+            계정 탈퇴
+          </Button>
+        </div>
+      </section>
+
+      {/* Logout Dialog */}
+      <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>로그아웃하시겠습니까?</AlertDialogTitle>
+            <AlertDialogDescription>
+              로그아웃하면 다시 로그인해야 합니다.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                try {
+                  await logout()
+                } catch {
+                  toast.error("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.")
+                  return
+                }
+                tokenStore.clearToken()
+                queryClient.clear()
+                router.replace('/landing')
+              }}
+            >
+              로그아웃
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Account Delete Dialog */}
+      <AccountDeleteDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+      />
+    </div>
+  )
+}

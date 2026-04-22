@@ -1,0 +1,99 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/shared/ui/alert-dialog'
+import { Checkbox } from '@/shared/ui/checkbox'
+import { Label } from '@/shared/ui/label'
+import { deleteAccount } from '@/features/auth/api/deleteAccount'
+import { tokenStore } from '@/shared/api'
+
+interface AccountDeleteDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+export function AccountDeleteDialog({ open, onOpenChange }: AccountDeleteDialogProps) {
+  const router = useRouter()
+  const queryClient = useQueryClient()
+  const [confirmed, setConfirmed] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setConfirmed(false)
+      setError(null)
+    }
+    onOpenChange(isOpen)
+  }
+
+  return (
+    <AlertDialog open={open} onOpenChange={handleOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>정말 탈퇴하시겠습니까?</AlertDialogTitle>
+          <AlertDialogDescription>
+            계정을 삭제하면 모든 데이터가 영구적으로 삭제됩니다.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <div className="space-y-3 py-2">
+          <div className="rounded-md bg-destructive/10 p-3 text-sm space-y-1">
+            <p className="text-destructive font-medium">탈퇴 시 유의사항</p>
+            <p className="text-muted-foreground">• 모든 멤버십이 즉시 해지됩니다</p>
+            <p className="text-muted-foreground">• 보유 티켓 및 양도 내역이 삭제됩니다</p>
+            <p className="text-muted-foreground">• 이 작업은 되돌릴 수 없습니다</p>
+          </div>
+
+          {error && (
+            <p className="text-xs text-destructive">{error}</p>
+          )}
+
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="delete-confirm"
+              checked={confirmed}
+              onCheckedChange={(checked) => setConfirmed(checked === true)}
+            />
+            <Label htmlFor="delete-confirm" className="cursor-pointer">
+              위 내용을 확인했습니다
+            </Label>
+          </div>
+        </div>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel>취소</AlertDialogCancel>
+          <AlertDialogAction
+            disabled={!confirmed}
+            className="bg-destructive text-white hover:bg-destructive/90"
+            onClick={async (e) => {
+              e.preventDefault()
+              setError(null)
+              try {
+                await deleteAccount()
+                tokenStore.clearToken()
+                queryClient.clear()
+                router.replace('/onboarding')
+              } catch (err) {
+                const message = err instanceof Error ? err.message : String(err)
+                setError(`탈퇴 실패: ${message}`)
+              }
+            }}
+          >
+            탈퇴하기
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}

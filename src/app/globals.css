@@ -1,0 +1,460 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* Semantic */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-muted-foreground: var(--sidebar-muted-foreground);
+
+  /* Tier */
+  --color-tier-lightning: var(--tier-lightning);
+  --color-tier-lightning-bg: var(--tier-lightning-bg);
+  --color-tier-thunder: var(--tier-thunder);
+  --color-tier-thunder-bg: var(--tier-thunder-bg);
+  --color-tier-cloud: var(--tier-cloud);
+  --color-tier-cloud-bg: var(--tier-cloud-bg);
+  --color-tier-mist: var(--tier-mist);
+  --color-tier-mist-bg: var(--tier-mist-bg);
+
+  /* Seat Grade */
+  --color-seat-grade-vip: var(--seat-grade-vip);
+  --color-seat-grade-r: var(--seat-grade-r);
+  --color-seat-grade-s: var(--seat-grade-s);
+  --color-seat-grade-a: var(--seat-grade-a);
+
+  /* Seat Status */
+  --color-seat-available: var(--seat-available);
+  --color-seat-selected: var(--seat-selected);
+  --color-seat-taken: var(--seat-taken);
+  --color-seat-locked: var(--seat-locked);
+
+  /* Booking Status */
+  --color-booking-open: var(--booking-open);
+  --color-booking-upcoming: var(--booking-upcoming);
+  --color-booking-soldout: var(--booking-soldout);
+  --color-booking-closed: var(--booking-closed);
+
+  /* Transfer Status */
+  --color-transfer-listed: var(--transfer-listed);
+  --color-transfer-sold: var(--transfer-sold);
+  --color-transfer-cancelled: var(--transfer-cancelled);
+
+  /* System Feedback */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* Semantic — originals: background oklch(1 0 0), foreground oklch(0.145 0 0) */
+  --background: #fffefe;
+  --foreground: #221415;
+  --card: #fffefe;
+  --card-foreground: #221415;
+  --popover: #fffefe;
+  --popover-foreground: #221415;
+  --primary: #ff5e32;
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: #1f2792;
+  --secondary-foreground: #ffffff;
+  --muted: oklch(0.968 0.003 264);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: #f0efed; /* original: oklch(0.955 0.005 264) */
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27);
+  --border: oklch(0.922 0.004 264);
+  --input: oklch(0.922 0.004 264);
+  --ring: #ff5e32;
+
+  /* Sidebar — originals: #FFFFFF, oklch(0.145 0 0) */
+  --sidebar: #f7f6f5;
+  --sidebar-foreground: #221415;
+  --sidebar-primary: #ff5e32;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: #f0efed; /* original: oklch(0.955 0.005 264) */
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0.004 264);
+  --sidebar-ring: #ff5e32;
+  --sidebar-active: #efedeb;
+  --sidebar-muted-foreground: oklch(0.556 0 0);
+
+  /* Tier (멤버십 등급) */
+  --tier-lightning: #ff5e32;
+  --tier-lightning-bg: #ff5e3220;
+  --tier-thunder: #1f2792;
+  --tier-thunder-bg: #1f279220;
+  --tier-cloud: #7e8cda;
+  --tier-cloud-bg: #7e8cda20;
+  --tier-mist: #9e9487;
+  --tier-mist-bg: #9e948720;
+
+  /* Seat Grade (좌석 등급) */
+  --seat-grade-vip: #6171d2;
+  --seat-grade-r: #7754c7;
+  --seat-grade-s: #ff8c8b;
+  --seat-grade-a: #8a9348;
+
+  /* Seat Status (좌석 상태) */
+  --seat-available: oklch(0.6 0.17 152);
+  --seat-selected: oklch(0.55 0.2 260);
+  --seat-taken: oklch(0.65 0.02 264);
+  --seat-locked: oklch(0.8 0.15 85);
+
+  /* Booking Status (예매 상태) */
+  --booking-open: #ff5e32;
+  --booking-upcoming: oklch(0.55 0.2 260);
+  --booking-soldout: oklch(0.556 0 0);
+  --booking-closed: oklch(0.708 0 0);
+
+  /* Transfer Status (양도 상태) */
+  --transfer-listed: oklch(0.55 0.2 260);
+  --transfer-sold: oklch(0.55 0.17 152);
+  --transfer-cancelled: oklch(0.556 0 0);
+
+  /* System Feedback */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #e7000b;
+  --info: #3b82f6;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family:
+      "Pretendard Variable",
+      "Pretendard",
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      sans-serif;
+    letter-spacing: -0.015em;
+  }
+}
+
+/* Timer pulse animation (30초 이하) */
+@keyframes pulse-timer {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-timer {
+  animation: pulse-timer 1s ease-in-out infinite;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Queue position counter roll */
+@keyframes counter-roll {
+  0% {
+    transform: translateY(-8px);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-counter-roll {
+  animation: counter-roll 500ms ease-out;
+}
+
+/* Seat hover outline for interactive available seats */
+.seat-interactive:hover {
+  stroke: var(--seat-selected);
+  stroke-width: 1.5;
+}
+
+/* Seat overlay fade-in */
+@keyframes seat-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.seat-overlay-fade-in {
+  animation: seat-overlay-in 300ms ease-out forwards;
+}
+
+/* Seat row staggered fade-in */
+@keyframes seat-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.seat-row-fade-in {
+  opacity: 0;
+  animation: seat-row-in 200ms ease-out forwards;
+}
+
+/* Chair hover effect */
+.seat-chair-hover {
+  transition: opacity 150ms ease;
+}
+.seat-chair-hover:hover {
+  opacity: 0.15;
+  fill: var(--seat-selected);
+}
+
+/* Minimap slide-in */
+@keyframes minimap-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.minimap-container {
+  animation: minimap-in 300ms ease-out forwards;
+}
+
+/* Hide scrollbar but keep scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.seat-row-fade-in {
+  opacity: 0;
+  animation: seat-row-in 200ms ease-out forwards;
+}
+
+/* Chair hover effect */
+.seat-chair-hover {
+  transition: opacity 150ms ease;
+}
+.seat-chair-hover:hover {
+  opacity: 0.15;
+  fill: var(--seat-selected);
+}
+
+/* Minimap slide-in */
+@keyframes minimap-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.minimap-container {
+  animation: minimap-in 300ms ease-out forwards;
+}
+
+/* ============================================
+   LANDING PAGE — CSS Custom Properties
+   ============================================ */
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@property --shimmer-pos {
+  syntax: "<percentage>";
+  initial-value: -100%;
+  inherits: false;
+}
+
+/* ============================================
+   LANDING PAGE — Keyframe Animations
+   ============================================ */
+@keyframes landing-border-spin {
+  to { --border-angle: 360deg; }
+}
+@keyframes landing-shimmer {
+  to { --shimmer-pos: 200%; }
+}
+@keyframes landing-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes landing-pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+@keyframes landing-scroll-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+@keyframes landing-glow-pulse {
+  0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 12px rgba(255, 94, 50, 0.3)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 20px rgba(255, 94, 50, 0.5)); }
+}
+@keyframes landing-bar-grow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(var(--bar-h, 1)); }
+}
+@keyframes landing-fade-line {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes landing-slide-row {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes landing-progress-fill {
+  from { width: 0; }
+  to { width: var(--progress-w, 0%); }
+}
+@keyframes landing-line-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ============================================
+   LANDING PAGE — Scroll Reveal
+   ============================================ */
+.landing-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.landing-reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+.landing-stagger .landing-child {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.landing-stagger.visible .landing-child { opacity: 1; transform: none; }
+.landing-stagger.visible .landing-child:nth-child(1) { transition-delay: 0ms; }
+.landing-stagger.visible .landing-child:nth-child(2) { transition-delay: 80ms; }
+.landing-stagger.visible .landing-child:nth-child(3) { transition-delay: 160ms; }
+.landing-stagger.visible .landing-child:nth-child(4) { transition-delay: 240ms; }
+
+/* ============================================
+   LANDING PAGE — Bento Widget Animations
+   ============================================ */
+.landing-bento-bar {
+  transform: scaleY(0);
+  transform-origin: bottom;
+}
+.landing-bento-animated .landing-bento-bar {
+  animation: landing-bar-grow 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.landing-bento-animated .landing-bento-bar:nth-child(1) { animation-delay: 0.1s; }
+.landing-bento-animated .landing-bento-bar:nth-child(2) { animation-delay: 0.2s; }
+.landing-bento-animated .landing-bento-bar:nth-child(3) { animation-delay: 0.3s; }
+.landing-bento-animated .landing-bento-bar:nth-child(4) { animation-delay: 0.4s; }
+.landing-bento-animated .landing-bento-bar:nth-child(5) { animation-delay: 0.5s; }
+.landing-bento-animated .landing-bento-bar:nth-child(6) { animation-delay: 0.6s; }
+.landing-bento-animated .landing-bento-bar:nth-child(7) { animation-delay: 0.7s; }
+.landing-bento-animated .landing-bento-bar:nth-child(8) { animation-delay: 0.8s; }
+
+.landing-log-line { opacity: 0; }
+.landing-bento-animated .landing-log-line {
+  animation: landing-fade-line 0.4s ease forwards;
+}
+.landing-bento-animated .landing-log-line:nth-child(1) { animation-delay: 0.2s; }
+.landing-bento-animated .landing-log-line:nth-child(2) { animation-delay: 0.35s; }
+.landing-bento-animated .landing-log-line:nth-child(3) { animation-delay: 0.5s; }
+.landing-bento-animated .landing-log-line:nth-child(4) { animation-delay: 0.65s; }
+.landing-bento-animated .landing-log-line:nth-child(5) { animation-delay: 0.8s; }
+.landing-bento-animated .landing-log-line:nth-child(6) { animation-delay: 0.95s; }
+
+.landing-status-row { opacity: 0; transform: translateX(-12px); }
+.landing-bento-animated .landing-status-row {
+  animation: landing-slide-row 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.landing-bento-animated .landing-status-row:nth-child(1) { animation-delay: 0.15s; }
+.landing-bento-animated .landing-status-row:nth-child(2) { animation-delay: 0.25s; }
+.landing-bento-animated .landing-status-row:nth-child(3) { animation-delay: 0.35s; }
+.landing-bento-animated .landing-status-row:nth-child(4) { animation-delay: 0.45s; }
+
+.landing-progress-fill { width: 0; }
+.landing-bento-animated .landing-progress-fill {
+  animation: landing-progress-fill 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.landing-bento-animated .landing-progress-item:nth-child(1) .landing-progress-fill { animation-delay: 0.2s; }
+.landing-bento-animated .landing-progress-item:nth-child(2) .landing-progress-fill { animation-delay: 0.35s; }
+.landing-bento-animated .landing-progress-item:nth-child(3) .landing-progress-fill { animation-delay: 0.5s; }
+
+/* How it works connecting line */
+.landing-how-line {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.landing-how-line.visible { transform: scaleX(1); }
+

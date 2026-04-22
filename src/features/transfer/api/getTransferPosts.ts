@@ -1,0 +1,278 @@
+import { apiRequest } from "@/shared/api/client";
+import type {
+  TransferListing,
+  TransferStatus,
+  TierLevel,
+  Event,
+} from "@/shared/types";
+
+export type EnrichedTransfer = TransferListing & { event: Event };
+
+interface TransferPostItem {
+  id: number;
+  artistId: number;
+  showId: number;
+  showName: string;
+  showDate: string;
+  section: string;
+  rowInfo: string;
+  faceValue: number;
+  sellingPrice: number;
+  sellerTier: string;
+  sellerTradeCount: number;
+  status: string;
+  createdAt: string;
+}
+
+interface TransferPostsApiResponse {
+  isSuccess: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    content: TransferPostItem[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+  };
+}
+
+const VALID_TIERS: TierLevel[] = ["LIGHTNING", "THUNDER", "CLOUD", "MIST"];
+
+function toTierLevel(raw: string): TierLevel {
+  const upper = raw.toUpperCase() as TierLevel;
+  return VALID_TIERS.includes(upper) ? upper : "MIST";
+}
+
+function toTransferStatus(raw: string): TransferStatus {
+  return raw.toLowerCase() as TransferStatus;
+}
+
+function mapToEnrichedTransfer(item: TransferPostItem): EnrichedTransfer {
+  return {
+    id: String(item.id),
+    ticketId: "",
+    eventId: String(item.showId),
+    sellerId: "",
+    sellerTier: toTierLevel(item.sellerTier),
+    sellerTransactionCount: item.sellerTradeCount,
+    price: item.sellingPrice,
+    faceValue: item.faceValue,
+    feeAmount: 0,
+    sellerExpectedAmount: 0,
+    section: item.section,
+    zone: "",
+    seatInfo: item.rowInfo ?? "",
+    status: toTransferStatus(item.status),
+    createdAt: item.createdAt,
+    event: {
+      id: String(item.showId),
+      artistId: String(item.artistId),
+      title: item.showName,
+      venue: "",
+      dates: [
+        {
+          id: String(item.showId),
+          date: item.showDate,
+          bookingWindows: [],
+          totalSeats: 0,
+          remainingSeats: 0,
+        },
+      ],
+      poster: "",
+      status: "open",
+    },
+  };
+}
+
+interface TransferPostDetail {
+  id: number;
+  artistId: number;
+  sellerUserId: number;
+  showName: string;
+  showDate: string;
+  showVenue: string;
+  section: string;
+  zone: string;
+  rowInfo: string;
+  seatNumber: string;
+  faceValue: number;
+  sellingPrice: number;
+  sellerTier: string;
+  sellerTradeCount: number;
+  status: string;
+  sellerExpectedAmount: number;
+  feeAmount: number;
+  createdAt: string;
+}
+
+function mapDetailToEnrichedTransfer(
+  item: TransferPostDetail,
+): EnrichedTransfer {
+  const seatParts = [
+    item.rowInfo && `${item.rowInfo}열`,
+    item.seatNumber && `${item.seatNumber}번`,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return {
+    id: String(item.id),
+    ticketId: "",
+    eventId: String(item.id),
+    sellerId: String(item.sellerUserId),
+    sellerTier: toTierLevel(item.sellerTier),
+    sellerTransactionCount: item.sellerTradeCount,
+    price: item.sellingPrice,
+    faceValue: item.faceValue,
+    feeAmount: item.feeAmount,
+    sellerExpectedAmount: item.sellerExpectedAmount,
+    section: item.section,
+    zone: item.zone ?? "",
+    seatInfo: seatParts,
+    status: toTransferStatus(item.status),
+    createdAt: item.createdAt,
+    event: {
+      id: String(item.id),
+      artistId: String(item.artistId),
+      title: item.showName,
+      venue: item.showVenue,
+      dates: [
+        {
+          id: String(item.id),
+          date: item.showDate,
+          bookingWindows: [],
+          totalSeats: 0,
+          remainingSeats: 0,
+        },
+      ],
+      poster: "",
+      status: "open",
+    },
+  };
+}
+
+export async function getTransferPostById(
+  id: number | string,
+  userId?: number | string,
+): Promise<EnrichedTransfer> {
+  const headers: Record<string, string> = {};
+  if (userId !== undefined) {
+    headers["X-User-Id"] = String(userId);
+  }
+
+  const res = await apiRequest<{
+    isSuccess: boolean;
+    data: TransferPostDetail;
+  }>(`/transfers/posts/${id}`, { service: "community", headers });
+
+  return mapDetailToEnrichedTransfer(res.data.data);
+}
+
+export interface ReserveResult {
+  postId: number;
+  orderId: string;
+  paymentId: number;
+  sellingPrice: number;
+}
+
+export async function reserveTransferPost(
+  postId: number | string,
+  artistId: number | string,
+  userId: number | string,
+): Promise<ReserveResult> {
+  const res = await apiRequest<{ isSuccess: boolean; data: ReserveResult }>(
+    `/transfers/posts/${postId}/reserve?artistId=${artistId}`,
+    {
+      method: "POST",
+      service: "community",
+      headers: { "X-User-Id": String(userId) },
+    },
+  );
+  return res.data.data;
+}
+
+export async function confirmTransferPost(
+  orderId: string,
+  paymentKey: string,
+  userId: number | string,
+): Promise<void> {
+  await apiRequest("/transfers/posts/confirm", {
+    method: "POST",
+    service: "community",
+    headers: { "X-User-Id": String(userId) },
+    body: { orderId, paymentKey },
+  });
+}
+
+export interface CreateTransferPostResult {
+  id: number;
+  sellingPrice: number;
+  sellerExpectedAmount: number;
+  feeRate: number;
+  feeAmount: number;
+}
+
+export async function createTransferPost(
+  userId: number | string,
+  artistId: number | string,
+  eventId: number | string,
+  showId: number | string,
+  reservationId: string,
+): Promise<CreateTransferPostResult> {
+  const res = await apiRequest<{ isSuccess: boolean; data: CreateTransferPostResult }>("/transfers/posts", {
+    method: "POST",
+    service: "community",
+    headers: { "X-User-Id": String(userId) },
+    body: {
+      artistId: Number(artistId),
+      eventId: Number(eventId),
+      showId: Number(showId),
+      reservationId,
+    },
+  });
+  return res.data.data;
+}
+
+export async function updateTransferPost(
+  id: number | string,
+  userId: number | string,
+  sellingPrice: number,
+): Promise<void> {
+  await apiRequest(`/transfers/posts/${id}`, {
+    method: "PATCH",
+    service: "community",
+    headers: { "X-User-Id": String(userId) },
+    body: { sellingPrice },
+  });
+}
+
+export async function deleteTransferPost(
+  id: number | string,
+  userId: number | string,
+): Promise<void> {
+  await apiRequest(`/transfers/posts/${id}`, {
+    method: "DELETE",
+    service: "community",
+    headers: { "X-User-Id": String(userId) },
+  });
+}
+
+export async function getTransferPosts(
+  artistId: string | number,
+  userId?: number | string,
+): Promise<EnrichedTransfer[]> {
+  const headers: Record<string, string> = {};
+  if (userId !== undefined) {
+    headers["X-User-Id"] = String(userId);
+  }
+
+  const res = await apiRequest<TransferPostsApiResponse>(
+    `/transfers/posts?artistId=${artistId}&size=50`,
+    { service: "community", headers },
+  );
+
+  return res.data.data.content.map(mapToEnrichedTransfer);
+}
