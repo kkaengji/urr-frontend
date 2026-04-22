@@ -267,7 +267,7 @@ export const allEventsData: EventListItem[] = [
     status: "open",
     category: "fanmeeting",
     tags: [],
-    poster: "/events/event_kim-seonho-fanmeet.png",
+    poster: "/events/event_kim_seonho_fanmeeting.png",
   },
   {
     id: "9",
@@ -339,7 +339,7 @@ export const allEventsData: EventListItem[] = [
     status: "open",
     category: "festival",
     tags: [],
-    poster: "/events/event_newjeans-complexcon.png",
+    poster: "/artists/8/events/event_newjeans-complexcon.png",
   },
   {
     id: "10",

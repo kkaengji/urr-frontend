@@ -1,4 +1,4 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
 
 export interface CancelReservationParams {
   eventId: number;
@@ -21,25 +21,24 @@ export interface CancelReservationResponse {
   updatedAt: string;
 }
 
-interface CancelReservationApiResponse {
-  isSuccess: boolean;
-  statusCode: number;
-  message: string;
-  data: CancelReservationResponse;
-}
-
 export async function cancelReservation(
   params: CancelReservationParams,
   userId: number | string,
 ): Promise<CancelReservationResponse> {
-  const res = await apiRequest<CancelReservationApiResponse>(
-    "/ticket/reservations/cancel",
-    {
-      method: "POST",
-      service: "ticketing",
-      headers: { "X-User-Id": String(userId) },
-      body: params,
-    },
-  );
-  return res.data.data;
+  await delay(400);
+  const now = new Date().toISOString();
+  return {
+    reservationId: `mock-res-cancelled-${params.seatId}`,
+    eventId: params.eventId,
+    showId: params.showId,
+    seatId: params.seatId,
+    userId: Number(userId),
+    status: "CANCELLED",
+    paymentStatus: "REFUNDED",
+    paidAt: null,
+    refundStatus: "COMPLETED",
+    expiresAt: now,
+    refundedAt: now,
+    updatedAt: now,
+  };
 }

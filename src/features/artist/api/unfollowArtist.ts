@@ -1,11 +1,8 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
 
 export async function unfollowArtist(
-  artistId: string | number,
-  userId: number,
+  _artistId: string | number,
+  _userId: number,
 ): Promise<void> {
-  await apiRequest(`/artists/${artistId}/follow?userId=${userId}`, {
-    method: "DELETE",
-    service: "events",
-  });
+  await delay();
 }

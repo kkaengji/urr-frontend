@@ -1,4 +1,5 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
+import { mockArtists } from "@/shared/lib/mocks/artists";
 import type { ArtistCategory } from "./getArtists";
 
 export interface ArtistDetail {
@@ -13,20 +14,35 @@ export interface ArtistDetail {
   category?: ArtistCategory;
 }
 
-interface ArtistApiResponse {
-  isSuccess: boolean;
-  statusCode: number;
-  message: string;
-  data: ArtistDetail;
-}
-
 export async function getArtist(
   artistId: string | number,
-  userId?: number,
+  _userId?: number,
 ): Promise<ArtistDetail> {
-  const res = await apiRequest<ArtistApiResponse>(`/artists/${artistId}`, {
-    service: "events",
-    headers: userId !== undefined ? { "X-User-Id": String(userId) } : undefined,
-  });
-  return res.data.data;
+  await delay(300);
+  const artist = mockArtists.find((a) => String(a.id) === String(artistId));
+  if (!artist) {
+    const fallback = mockArtists[0];
+    return {
+      id: Number(artistId),
+      name: fallback.name,
+      profileImageUrl: fallback.avatar,
+      description: fallback.bio ?? "",
+      isFollowing: false,
+      followerCount: fallback.followerCount,
+      bio: fallback.bio,
+      bannerImageUrl: fallback.banner,
+      category: fallback.category as ArtistCategory,
+    };
+  }
+  return {
+    id: Number(artist.id),
+    name: artist.name,
+    profileImageUrl: artist.avatar,
+    description: artist.bio ?? "",
+    isFollowing: true,
+    followerCount: artist.followerCount,
+    bio: artist.bio,
+    bannerImageUrl: artist.banner,
+    category: artist.category as ArtistCategory,
+  };
 }

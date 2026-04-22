@@ -1,14 +1,9 @@
-import { fetchWithAuth } from "@/shared/api";
+import { delay } from "@/shared/lib/mockDelay";
 
 export async function updateNickname(
-  membershipId: string | number,
-  userId: number,
-  nickname: string,
+  _membershipId: string | number,
+  _userId: number,
+  _nickname: string,
 ): Promise<void> {
-  await fetchWithAuth(`/membership/${membershipId}/nickname`, {
-    method: "PATCH",
-    service: "events",
-    headers: { "X-User-Id": String(userId) },
-    body: { nickname },
-  });
+  await delay(300);
 }

@@ -1,4 +1,5 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
+import { mockArtists } from "@/shared/lib/mocks/artists";
 
 export type ArtistCategory =
   | "boygroup"
@@ -31,14 +32,15 @@ export interface ArtistSummary {
   category?: ArtistCategory;
 }
 
-interface ArtistsApiResponse {
-  isSuccess: boolean;
-  statusCode: number;
-  message: string;
-  data: ArtistSummary[];
-}
-
 export async function getArtists(): Promise<ArtistSummary[]> {
-  const res = await apiRequest<ArtistsApiResponse>("/artists", { service: "events" });
-  return res.data.data;
+  await delay(400);
+  return mockArtists.map((a) => ({
+    id: Number(a.id),
+    name: a.name,
+    profileImageUrl: a.avatar,
+    followerCount: a.followerCount,
+    bio: a.bio,
+    bannerImageUrl: a.banner,
+    category: a.category as ArtistCategory,
+  }));
 }

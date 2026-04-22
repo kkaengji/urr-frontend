@@ -1,4 +1,4 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
 
 export interface ReleaseReservationParams {
   reservationIds: string[];
@@ -12,25 +12,15 @@ export interface ReleaseReservationResponse {
   skippedReservations: Record<string, string>;
 }
 
-interface ReleaseReservationApiResponse {
-  isSuccess: boolean;
-  statusCode: number;
-  message: string;
-  data: ReleaseReservationResponse;
-}
-
 export async function releaseReservation(
   params: ReleaseReservationParams,
-  userId: number | string,
+  _userId: number | string,
 ): Promise<ReleaseReservationResponse> {
-  const res = await apiRequest<ReleaseReservationApiResponse>(
-    "/ticket/reservations/release",
-    {
-      method: "POST",
-      service: "ticketing",
-      headers: { "X-User-Id": String(userId) },
-      body: params,
-    },
-  );
-  return res.data.data;
+  await delay(300);
+  return {
+    requestedCount: params.reservationIds.length,
+    releasedCount: params.reservationIds.length,
+    releasedReservationIds: params.reservationIds,
+    skippedReservations: {},
+  };
 }

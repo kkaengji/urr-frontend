@@ -1,4 +1,4 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
 
 export interface ConfirmReservationParams {
   reservationIds: string[];
@@ -25,25 +25,26 @@ export interface ConfirmReservationResponse {
   reservations: ConfirmReservationItem[];
 }
 
-interface ConfirmReservationApiResponse {
-  isSuccess: boolean;
-  statusCode: number;
-  message: string;
-  data: ConfirmReservationResponse;
-}
-
 export async function confirmReservation(
   params: ConfirmReservationParams,
 ): Promise<ConfirmReservationResponse> {
-  const { userId, reservationIds } = params;
-  const res = await apiRequest<ConfirmReservationApiResponse>(
-    "/ticket/reservations/confirm",
-    {
-      method: "POST",
-      service: "ticketing",
-      headers: { "X-User-Id": String(userId) },
-      body: { reservationIds },
-    },
-  );
-  return res.data.data;
+  await delay(400);
+  const now = new Date().toISOString();
+  return {
+    paymentId: 1001,
+    reservations: params.reservationIds.map((id) => ({
+      reservationId: id,
+      eventId: 1,
+      showId: 101,
+      seatId: id.replace("mock-res-", "seat-"),
+      userId: Number(params.userId),
+      status: "CONFIRMED",
+      paymentStatus: "PAID",
+      paidAt: now,
+      refundStatus: null,
+      expiresAt: now,
+      refundedAt: null,
+      updatedAt: now,
+    })),
+  };
 }

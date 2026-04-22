@@ -24,6 +24,13 @@ const TIER_OPEN_LABEL: Record<TierLevel, string> = {
   MIST: "일반 오픈 시점",
 };
 
+const TIER_TRANSFER_FEE_LABEL: Record<TierLevel, string> = {
+  LIGHTNING: "5%",
+  THUNDER: "5%",
+  CLOUD: "10%",
+  MIST: "불가",
+};
+
 export function MembershipIntroStep({
   artist,
   onBack,
@@ -129,9 +136,9 @@ export function MembershipIntroStep({
                     <td className="px-4 py-3 text-muted-foreground">
                       {policy
                         ? policy.transferFeeRate != null
-                          ? `${policy.transferFeeRate}%`
-                          : "불가"
-                        : "—"}
+                          ? `${Math.round(policy.transferFeeRate * 100)}%`
+                          : TIER_TRANSFER_FEE_LABEL[tier]
+                        : TIER_TRANSFER_FEE_LABEL[tier]}
                     </td>
                   </tr>
                 );

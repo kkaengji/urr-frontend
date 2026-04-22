@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { registerAuthHandlers, redirectToQueue, tokenStore } from "@/shared/api";
-import { reissueToken } from "../api/reissue";
+import { tokenStore } from "@/shared/api/tokenStore";
 
 function Spinner() {
   return (
@@ -15,49 +13,13 @@ function Spinner() {
 }
 
 export function AuthInitializer({ children }: { children: ReactNode }) {
-  const router = useRouter();
-  const routerRef = useRef(router);
-  useEffect(() => {
-    routerRef.current = router;
-  }, [router]);
-
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // 핸들러 등록 — reissueToken 호출 전에 먼저 등록
-    registerAuthHandlers({
-      onTokenReissued: (token) => tokenStore.setToken(token),
-      onAuthFailed: () => {
-        tokenStore.clearToken();
-        routerRef.current.replace("/onboarding");
-      },
-      onRateLimited: () => redirectToQueue(),
-    });
-
-    // 이미 토큰이 있으면 (소셜 로그인 직후 등) reissue 스킵
-    if (tokenStore.getToken()) {
-      setTimeout(() => setReady(true), 0);
-      return;
-    }
-
-    // is_authenticated 쿠키 없으면 로그아웃 상태 — reissue 시도 불필요
-    // (httpOnly refreshToken 쿠키가 남아있어도 재로그인 방지)
-    const hasAuthCookie = document.cookie
-      .split(";")
-      .some((c) => c.trim().startsWith("is_authenticated="));
-    if (!hasAuthCookie) {
-      setTimeout(() => setReady(true), 0);
-      return;
-    }
-
-    // 새로고침 시 httpOnly 쿠키로 세션 복원
-    reissueToken().then((token) => {
-      if (token) {
-        tokenStore.setToken(token);
-      }
-      // 토큰 없어도 ready=true — 이후 API 401 시 onAuthFailed가 리다이렉트 처리
-      setReady(true);
-    });
+    // 포폴 모드: sessionStorage에 토큰 있으면 그대로 사용, 없으면 비로그인 상태
+    // tokenStore는 모듈 초기화 시 sessionStorage에서 자동 복원됨
+    void tokenStore.getToken();
+    setTimeout(() => setReady(true), 0);
   }, []);
 
   if (!ready) return <Spinner />;

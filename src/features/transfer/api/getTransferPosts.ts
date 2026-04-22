@@ -1,4 +1,4 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
 import type {
   TransferListing,
   TransferStatus,
@@ -8,89 +8,12 @@ import type {
 
 export type EnrichedTransfer = TransferListing & { event: Event };
 
-interface TransferPostItem {
+// ── Internal mock data ───────────────────────────────────
+
+interface MockTransferPost {
   id: number;
   artistId: number;
   showId: number;
-  showName: string;
-  showDate: string;
-  section: string;
-  rowInfo: string;
-  faceValue: number;
-  sellingPrice: number;
-  sellerTier: string;
-  sellerTradeCount: number;
-  status: string;
-  createdAt: string;
-}
-
-interface TransferPostsApiResponse {
-  isSuccess: boolean;
-  statusCode: number;
-  message: string;
-  data: {
-    content: TransferPostItem[];
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-  };
-}
-
-const VALID_TIERS: TierLevel[] = ["LIGHTNING", "THUNDER", "CLOUD", "MIST"];
-
-function toTierLevel(raw: string): TierLevel {
-  const upper = raw.toUpperCase() as TierLevel;
-  return VALID_TIERS.includes(upper) ? upper : "MIST";
-}
-
-function toTransferStatus(raw: string): TransferStatus {
-  return raw.toLowerCase() as TransferStatus;
-}
-
-function mapToEnrichedTransfer(item: TransferPostItem): EnrichedTransfer {
-  return {
-    id: String(item.id),
-    ticketId: "",
-    eventId: String(item.showId),
-    sellerId: "",
-    sellerTier: toTierLevel(item.sellerTier),
-    sellerTransactionCount: item.sellerTradeCount,
-    price: item.sellingPrice,
-    faceValue: item.faceValue,
-    feeAmount: 0,
-    sellerExpectedAmount: 0,
-    section: item.section,
-    zone: "",
-    seatInfo: item.rowInfo ?? "",
-    status: toTransferStatus(item.status),
-    createdAt: item.createdAt,
-    event: {
-      id: String(item.showId),
-      artistId: String(item.artistId),
-      title: item.showName,
-      venue: "",
-      dates: [
-        {
-          id: String(item.showId),
-          date: item.showDate,
-          bookingWindows: [],
-          totalSeats: 0,
-          remainingSeats: 0,
-        },
-      ],
-      poster: "",
-      status: "open",
-    },
-  };
-}
-
-interface TransferPostDetail {
-  id: number;
-  artistId: number;
-  sellerUserId: number;
   showName: string;
   showDate: string;
   showVenue: string;
@@ -102,26 +25,42 @@ interface TransferPostDetail {
   sellingPrice: number;
   sellerTier: string;
   sellerTradeCount: number;
-  status: string;
-  sellerExpectedAmount: number;
   feeAmount: number;
+  sellerExpectedAmount: number;
+  status: string;
+  sellerUserId: number;
   createdAt: string;
 }
 
-function mapDetailToEnrichedTransfer(
-  item: TransferPostDetail,
-): EnrichedTransfer {
+const mockPosts: MockTransferPost[] = [
+  { id: 1, artistId: 1, showId: 101, showName: "G-Dragon 2026 DOME TOUR", showDate: "2026-06-01T18:00:00+09:00", showVenue: "KSPO DOME", section: "R", zone: "R3", rowInfo: "5", seatNumber: "12", faceValue: 110000, sellingPrice: 140000, sellerTier: "LIGHTNING", sellerTradeCount: 8, feeAmount: 7000, sellerExpectedAmount: 133000, status: "listed", sellerUserId: 101, createdAt: "2026-04-15T10:00:00+09:00" },
+  { id: 2, artistId: 1, showId: 101, showName: "G-Dragon 2026 DOME TOUR", showDate: "2026-06-01T18:00:00+09:00", showVenue: "KSPO DOME", section: "S", zone: "S2", rowInfo: "11", seatNumber: "7", faceValue: 132000, sellingPrice: 160000, sellerTier: "THUNDER", sellerTradeCount: 3, feeAmount: 8000, sellerExpectedAmount: 152000, status: "listed", sellerUserId: 102, createdAt: "2026-04-16T14:30:00+09:00" },
+  { id: 3, artistId: 1, showId: 101, showName: "G-Dragon 2026 DOME TOUR", showDate: "2026-06-01T18:00:00+09:00", showVenue: "KSPO DOME", section: "A", zone: "A5", rowInfo: "3", seatNumber: "20", faceValue: 99000, sellingPrice: 110000, sellerTier: "CLOUD", sellerTradeCount: 1, feeAmount: 11000, sellerExpectedAmount: 99000, status: "listed", sellerUserId: 103, createdAt: "2026-04-17T09:00:00+09:00" },
+  { id: 4, artistId: 2, showId: 201, showName: "BTS YET TO COME ENCORE IN SEOUL", showDate: "2026-08-01T19:00:00+09:00", showVenue: "잠실종합운동장 주경기장", section: "VIP", zone: "VIP1", rowInfo: "2", seatNumber: "8", faceValue: 220000, sellingPrice: 280000, sellerTier: "LIGHTNING", sellerTradeCount: 12, feeAmount: 14000, sellerExpectedAmount: 266000, status: "listed", sellerUserId: 104, createdAt: "2026-04-18T11:00:00+09:00" },
+  { id: 5, artistId: 2, showId: 201, showName: "BTS YET TO COME ENCORE IN SEOUL", showDate: "2026-08-01T19:00:00+09:00", showVenue: "잠실종합운동장 주경기장", section: "R", zone: "R5", rowInfo: "18", seatNumber: "33", faceValue: 143000, sellingPrice: 165000, sellerTier: "THUNDER", sellerTradeCount: 5, feeAmount: 8250, sellerExpectedAmount: 156750, status: "listed", sellerUserId: 105, createdAt: "2026-04-19T08:30:00+09:00" },
+];
+
+// ── Type helpers ─────────────────────────────────────────
+
+const VALID_TIERS: TierLevel[] = ["LIGHTNING", "THUNDER", "CLOUD", "MIST"];
+function toTierLevel(raw: string): TierLevel {
+  const upper = raw.toUpperCase() as TierLevel;
+  return VALID_TIERS.includes(upper) ? upper : "MIST";
+}
+function toTransferStatus(raw: string): TransferStatus {
+  return raw.toLowerCase() as TransferStatus;
+}
+
+function mapPost(item: MockTransferPost): EnrichedTransfer {
   const seatParts = [
     item.rowInfo && `${item.rowInfo}열`,
     item.seatNumber && `${item.seatNumber}번`,
-  ]
-    .filter(Boolean)
-    .join(" ");
+  ].filter(Boolean).join(" ");
 
   return {
     id: String(item.id),
     ticketId: "",
-    eventId: String(item.id),
+    eventId: String(item.showId),
     sellerId: String(item.sellerUserId),
     sellerTier: toTierLevel(item.sellerTier),
     sellerTransactionCount: item.sellerTradeCount,
@@ -130,45 +69,41 @@ function mapDetailToEnrichedTransfer(
     feeAmount: item.feeAmount,
     sellerExpectedAmount: item.sellerExpectedAmount,
     section: item.section,
-    zone: item.zone ?? "",
+    zone: item.zone,
     seatInfo: seatParts,
     status: toTransferStatus(item.status),
     createdAt: item.createdAt,
     event: {
-      id: String(item.id),
+      id: String(item.showId),
       artistId: String(item.artistId),
       title: item.showName,
       venue: item.showVenue,
-      dates: [
-        {
-          id: String(item.id),
-          date: item.showDate,
-          bookingWindows: [],
-          totalSeats: 0,
-          remainingSeats: 0,
-        },
-      ],
+      dates: [{ id: String(item.showId), date: item.showDate, bookingWindows: [], totalSeats: 0, remainingSeats: 0 }],
       poster: "",
       status: "open",
     },
   };
 }
 
+// ── Exported functions ───────────────────────────────────
+
+export async function getTransferPosts(
+  artistId: string | number,
+  _userId?: number | string,
+): Promise<EnrichedTransfer[]> {
+  await delay(400);
+  return mockPosts
+    .filter((p) => String(p.artistId) === String(artistId))
+    .map(mapPost);
+}
+
 export async function getTransferPostById(
   id: number | string,
-  userId?: number | string,
+  _userId?: number | string,
 ): Promise<EnrichedTransfer> {
-  const headers: Record<string, string> = {};
-  if (userId !== undefined) {
-    headers["X-User-Id"] = String(userId);
-  }
-
-  const res = await apiRequest<{
-    isSuccess: boolean;
-    data: TransferPostDetail;
-  }>(`/transfers/posts/${id}`, { service: "community", headers });
-
-  return mapDetailToEnrichedTransfer(res.data.data);
+  await delay(300);
+  const item = mockPosts.find((p) => String(p.id) === String(id)) ?? mockPosts[0];
+  return mapPost(item);
 }
 
 export interface ReserveResult {
@@ -180,31 +115,25 @@ export interface ReserveResult {
 
 export async function reserveTransferPost(
   postId: number | string,
-  artistId: number | string,
-  userId: number | string,
+  _artistId: number | string,
+  _userId: number | string,
 ): Promise<ReserveResult> {
-  const res = await apiRequest<{ isSuccess: boolean; data: ReserveResult }>(
-    `/transfers/posts/${postId}/reserve?artistId=${artistId}`,
-    {
-      method: "POST",
-      service: "community",
-      headers: { "X-User-Id": String(userId) },
-    },
-  );
-  return res.data.data;
+  await delay(500);
+  const item = mockPosts.find((p) => String(p.id) === String(postId)) ?? mockPosts[0];
+  return {
+    postId: Number(postId),
+    orderId: `mock-tf-order-${Date.now()}`,
+    paymentId: 2001,
+    sellingPrice: item.sellingPrice,
+  };
 }
 
 export async function confirmTransferPost(
-  orderId: string,
-  paymentKey: string,
-  userId: number | string,
+  _orderId: string,
+  _paymentKey: string,
+  _userId: number | string,
 ): Promise<void> {
-  await apiRequest("/transfers/posts/confirm", {
-    method: "POST",
-    service: "community",
-    headers: { "X-User-Id": String(userId) },
-    body: { orderId, paymentKey },
-  });
+  await delay(400);
 }
 
 export interface CreateTransferPostResult {
@@ -216,63 +145,33 @@ export interface CreateTransferPostResult {
 }
 
 export async function createTransferPost(
-  userId: number | string,
-  artistId: number | string,
-  eventId: number | string,
-  showId: number | string,
-  reservationId: string,
+  _userId: number | string,
+  _artistId: number | string,
+  _eventId: number | string,
+  _showId: number | string,
+  _reservationId: string,
 ): Promise<CreateTransferPostResult> {
-  const res = await apiRequest<{ isSuccess: boolean; data: CreateTransferPostResult }>("/transfers/posts", {
-    method: "POST",
-    service: "community",
-    headers: { "X-User-Id": String(userId) },
-    body: {
-      artistId: Number(artistId),
-      eventId: Number(eventId),
-      showId: Number(showId),
-      reservationId,
-    },
-  });
-  return res.data.data;
+  await delay(500);
+  return {
+    id: Date.now(),
+    sellingPrice: 132000,
+    sellerExpectedAmount: 119500,
+    feeRate: 0.05,
+    feeAmount: 6600,
+  };
 }
 
 export async function updateTransferPost(
-  id: number | string,
-  userId: number | string,
-  sellingPrice: number,
+  _id: number | string,
+  _userId: number | string,
+  _sellingPrice: number,
 ): Promise<void> {
-  await apiRequest(`/transfers/posts/${id}`, {
-    method: "PATCH",
-    service: "community",
-    headers: { "X-User-Id": String(userId) },
-    body: { sellingPrice },
-  });
+  await delay(300);
 }
 
 export async function deleteTransferPost(
-  id: number | string,
-  userId: number | string,
+  _id: number | string,
+  _userId: number | string,
 ): Promise<void> {
-  await apiRequest(`/transfers/posts/${id}`, {
-    method: "DELETE",
-    service: "community",
-    headers: { "X-User-Id": String(userId) },
-  });
-}
-
-export async function getTransferPosts(
-  artistId: string | number,
-  userId?: number | string,
-): Promise<EnrichedTransfer[]> {
-  const headers: Record<string, string> = {};
-  if (userId !== undefined) {
-    headers["X-User-Id"] = String(userId);
-  }
-
-  const res = await apiRequest<TransferPostsApiResponse>(
-    `/transfers/posts?artistId=${artistId}&size=50`,
-    { service: "community", headers },
-  );
-
-  return res.data.data.content.map(mapToEnrichedTransfer);
+  await delay(300);
 }

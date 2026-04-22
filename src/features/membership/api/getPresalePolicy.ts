@@ -1,4 +1,4 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
 import type { TierLevel } from "@/shared/types";
 
 export interface PresaleTierPolicy {
@@ -15,17 +15,20 @@ export interface PresalePolicy {
   tiers: PresaleTierPolicy[];
 }
 
-interface PresalePolicyResponse {
-  data: PresalePolicy;
-}
-
 export async function getPresalePolicy(
   eventId: string | number,
   showId: string | number,
 ): Promise<PresalePolicy> {
-  const res = await apiRequest<PresalePolicyResponse>(
-    `/membership/events/${eventId}/shows/${showId}/presale-policy`,
-    { service: "events" },
-  );
-  return res.data.data;
+  await delay(300);
+  return {
+    eventId: Number(eventId),
+    showId: Number(showId),
+    generalOpenAt: "2026-04-22T11:00:00+09:00",
+    tiers: [
+      { tier: "LIGHTNING", openAt: "2026-04-20T10:00:00+09:00", presaleOffsetMinutes: 0,    bookingFeeWon: 0    },
+      { tier: "THUNDER",   openAt: "2026-04-20T11:00:00+09:00", presaleOffsetMinutes: 60,   bookingFeeWon: 3000 },
+      { tier: "CLOUD",     openAt: "2026-04-22T10:00:00+09:00", presaleOffsetMinutes: 1440, bookingFeeWon: 5000 },
+      { tier: "MIST",      openAt: "2026-04-22T11:00:00+09:00", presaleOffsetMinutes: 0,    bookingFeeWon: 8000 },
+    ],
+  };
 }

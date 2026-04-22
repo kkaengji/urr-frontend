@@ -1,13 +1,6 @@
-import { fetchWithAuth } from "@/shared/api";
-import { tokenStore } from "@/shared/api/tokenStore";
-import { getUserIdFromToken } from "@/shared/lib/jwt";
-import type { ApiBaseResponse } from "@/features/auth/model/types";
+import { delay } from "@/shared/lib/mockDelay";
 
 // --- VWR (Tier 1) ---
-
-const VWR_BASE_URL = typeof window !== "undefined"
-  ? `${window.location.origin}/vwr`
-  : "https://urr.guru/vwr";
 
 export interface VwrAssignData {
   requestId: string;
@@ -20,44 +13,35 @@ export interface VwrCheckData {
   token?: string;
   position: number;
   servingCounter: number;
-  totalInQueue: number;          // (deprecated) 누적 발급 수 — currentlyWaiting 사용
-  currentlyWaiting?: number;     // 현재 실제 대기 중인 인원 (실시간 감소, 입장 완료자 제외)
+  totalInQueue: number;
+  currentlyWaiting?: number;
   ahead: number;
   estimatedWait?: number;
   nextPoll?: number;
 }
 
-export async function vwrAssign(eventId: string | number): Promise<VwrAssignData> {
-  const response = await fetch(`${VWR_BASE_URL}/assign/${eventId}`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeader(),
-    },
-  });
-  if (!response.ok) throw new Error(`VWR assign failed: ${response.status}`);
-  return response.json();
+export async function vwrAssign(_eventId: string | number): Promise<VwrAssignData> {
+  await delay(400);
+  return { requestId: "mock-vwr-req", position: 1, estimatedWait: 0 };
 }
 
-export async function vwrCheck(eventId: string | number, requestId: string): Promise<VwrCheckData> {
-  const response = await fetch(`${VWR_BASE_URL}/check/${eventId}/${requestId}`, {
-    method: "GET",
-    credentials: "include",
-    headers: getAuthHeader(),
-  });
-  if (!response.ok) throw new Error(`VWR check failed: ${response.status}`);
-  return response.json();
+export async function vwrCheck(_eventId: string | number, _requestId: string): Promise<VwrCheckData> {
+  await delay(300);
+  return {
+    admitted: true,
+    token: "mock-vwr-token",
+    position: 0,
+    servingCounter: 1,
+    totalInQueue: 8,
+    currentlyWaiting: 0,
+    ahead: 0,
+    estimatedWait: 0,
+  };
 }
 
-function getAuthHeader(): Record<string, string> {
-  const token = tokenStore.getToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
-function setEntryTokenCookie(token: string) {
-  if (typeof document === "undefined") return;
-  document.cookie = `urr-entry-token=${token}; path=/; max-age=900; SameSite=Lax`;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function setEntryTokenCookie(_token: string): void {
+  // no-op for demo
 }
 
 // --- Queue (Tier 2) ---
@@ -82,33 +66,27 @@ export interface QueuePollData {
   remainMs: number | null;
 }
 
-function getUserHeader(): Record<string, string> {
-  const userId = getUserIdFromToken();
-  return userId ? { "X-User-Id": String(userId) } : {};
-}
+let _rank = 8;
 
 export async function checkQueue(showId: string | number): Promise<QueueEntryData> {
-  const res = await fetchWithAuth<ApiBaseResponse<QueueEntryData>>(
-    `/queue/check/${showId}`,
-    {
-      method: "POST",
-      service: "queue",
-      headers: getUserHeader(),
-    },
-  );
-  return res.data.data;
+  await delay(400);
+  _rank = 8;
+  return { userId: 1, showId: Number(showId), status: "WAIT", rank: _rank, total: 1200, waitTime: 80 };
 }
 
 export async function pollQueue(showId: string | number): Promise<QueuePollData> {
-  const res = await fetchWithAuth<ApiBaseResponse<QueuePollData>>(
-    `/queue/${showId}`,
-    {
-      method: "GET",
-      service: "queue",
-      headers: getUserHeader(),
-    },
-  );
-  return res.data.data;
+  await delay(2000);
+  _rank = Math.max(0, _rank - (Math.floor(Math.random() * 3) + 2));
+  if (_rank <= 0) {
+    return {
+      userId: 1, showId: Number(showId),
+      status: "ACTIVE", rank: 0, total: 1200,
+      waitTime: 0, token: "mock-queue-token", remainMs: 180000,
+    };
+  }
+  return {
+    userId: 1, showId: Number(showId),
+    status: "WAIT", rank: _rank, total: Math.max(_rank, 1000),
+    waitTime: _rank * 10, token: null, remainMs: null,
+  };
 }
-
-export { setEntryTokenCookie };

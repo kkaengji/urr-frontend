@@ -1,4 +1,5 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
+import { getMyTickets } from "@/shared/lib/mocks/my-page";
 
 export type ReservationStatus = "PENDING" | "CONFIRMED" | "EXPIRED" | "FAILED" | "CANCELLED";
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED";
@@ -21,24 +22,28 @@ export interface ReservationSummary {
   paymentId?: number | null;
 }
 
-interface ReservationsApiResponse {
-  isSuccess: boolean;
-  statusCode: number;
-  message: string;
-  data: ReservationSummary[];
-}
-
 export async function getMyReservations(
-  userId: string | number,
+  _userId: string | number,
   status?: ReservationStatus,
 ): Promise<ReservationSummary[]> {
-  const params = status ? `?status=${status}` : "";
-  const res = await apiRequest<ReservationsApiResponse>(
-    `/ticket/users/reservations${params}`,
-    {
-      service: "ticketing",
-      headers: { "X-User-Id": String(userId) },
-    },
-  );
-  return res.data.data;
+  await delay(350);
+  const tickets = getMyTickets();
+  const reservations: ReservationSummary[] = tickets.map((t) => ({
+    reservationId: `res-${t.id}`,
+    eventId: Number(t.eventId) || 1,
+    showId: 101,
+    seatId: `${t.section.replace("석", "")}-1-${t.row}-${t.seatNumber}`,
+    userId: 1,
+    status: "CONFIRMED",
+    paymentStatus: "PAID",
+    paidAt: "2026-04-20T10:05:00+09:00",
+    refundStatus: "NONE",
+    expiresAt: null,
+    refundedAt: null,
+    updatedAt: "2026-04-20T10:05:00+09:00",
+    transferEligible: t.isTransferable,
+    paymentId: 1001,
+  }));
+  if (!status) return reservations;
+  return reservations.filter((r) => r.status === status);
 }

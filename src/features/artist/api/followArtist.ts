@@ -1,12 +1,8 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
 
 export async function followArtist(
-  artistId: string | number,
-  userId: number,
+  _artistId: string | number,
+  _userId: number,
 ): Promise<void> {
-  await apiRequest(`/artists/${artistId}/follow`, {
-    method: "POST",
-    service: "events",
-    headers: { "X-User-Id": String(userId) },
-  });
+  await delay();
 }

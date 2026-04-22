@@ -1,4 +1,4 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
 
 export interface BookTicketParams {
   eventId: number | string;
@@ -20,27 +20,17 @@ export interface BookTicketResponse {
   expiresAt: string;
 }
 
-interface BookTicketApiResponse {
-  isSuccess: boolean;
-  statusCode: number;
-  message: string;
-  data: BookTicketResponse;
-}
-
-export async function bookTicket(
-  params: BookTicketParams,
-): Promise<BookTicketResponse> {
-  const res = await apiRequest<BookTicketApiResponse>("/ticket/reservations", {
-    method: "POST",
-    service: "ticketing",
-    headers: { "X-User-Id": String(params.userId) },
-    body: {
-      eventId: Number(params.eventId),
-      showId: Number(params.showId),
-      artistId: Number(params.artistId),
-      seatIds: params.seatIds,
-      holdSeconds: params.holdSeconds ?? 180,
-    },
-  });
-  return res.data.data;
+export async function bookTicket(params: BookTicketParams): Promise<BookTicketResponse> {
+  await delay(500);
+  const expiresAt = new Date(Date.now() + 180_000).toISOString();
+  return {
+    orderId: `mock-order-${Date.now()}`,
+    reservationIds: params.seatIds.map((id, i) => `mock-res-${i + 1}-${id}`),
+    seatIds: params.seatIds,
+    status: "CONFIRMED",
+    paymentStatus: "PENDING",
+    paymentId: 1001,
+    totalAmount: 132000 * params.seatIds.length,
+    expiresAt,
+  };
 }

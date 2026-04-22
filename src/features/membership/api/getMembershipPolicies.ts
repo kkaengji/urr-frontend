@@ -1,4 +1,4 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
 import type { TierLevel } from "@/shared/types";
 
 export type BookingType = "PRESALE" | "GENERAL";
@@ -11,17 +11,16 @@ export interface MembershipTierPolicy {
   transferFeeRate: number | null;
 }
 
-interface MembershipPoliciesResponse {
-  artistId: number;
-  tiers: MembershipTierPolicy[];
-}
+const mockPolicies: MembershipTierPolicy[] = [
+  { tier: "LIGHTNING", presaleOffsetMinutes: 0,    bookingFeeWon: 0,    bookingType: "PRESALE", transferFeeRate: 0.05 },
+  { tier: "THUNDER",   presaleOffsetMinutes: 60,   bookingFeeWon: 3000, bookingType: "PRESALE", transferFeeRate: 0.05 },
+  { tier: "CLOUD",     presaleOffsetMinutes: 1440, bookingFeeWon: 5000, bookingType: "PRESALE", transferFeeRate: 0.10 },
+  { tier: "MIST",      presaleOffsetMinutes: 0,    bookingFeeWon: 8000, bookingType: "GENERAL", transferFeeRate: null },
+];
 
 export async function getMembershipPolicies(
-  artistId: string,
+  _artistId: string,
 ): Promise<MembershipTierPolicy[]> {
-  const res = await apiRequest<{ data: MembershipPoliciesResponse }>(
-    `/membership/artists/${artistId}/membership-policies`,
-    { service: "events" },
-  );
-  return res.data.data.tiers;
+  await delay(300);
+  return mockPolicies;
 }

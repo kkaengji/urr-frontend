@@ -15,7 +15,6 @@ import {
   useOnboardingAuth,
 } from "@/features/auth/onboarding";
 import { tokenStore } from "@/shared/api/tokenStore";
-import { reissueToken } from "@/features/auth/api/reissue";
 import { fetchMe } from "@/features/auth/api/me";
 import { logout } from "@/features/auth/api/logout";
 import { AUTH_ME_QUERY_KEY } from "@/features/auth/model/useCurrentUser";
@@ -76,23 +75,14 @@ function OnboardingWidgetInner() {
       return;
     }
 
-    const hasSession = document.cookie
-      .split(";")
-      .some((c) => c.trim().startsWith("is_authenticated=1"));
-    if (!hasSession) {
-      setTimeout(() => setAuthChecked(true), 0);
-      return;
-    }
-
-    reissueToken().then((token) => {
-      if (token) {
-        tokenStore.setToken(token);
-        router.replace("/");
-      } else {
-        setAuthChecked(true);
-      }
-    });
+    // 포폴 모드: 토큰 없으면 즉시 로그인 화면 표시
+    setTimeout(() => setAuthChecked(true), 0);
   }, [initialStep, router, queryClient]);
+
+  const handleGuestLogin = useCallback(() => {
+    tokenStore.setToken("mock-guest");
+    router.replace("/");
+  }, [router]);
 
   const handleSuccess = useCallback((userName: string) => {
     setCompletedUserName(userName);
@@ -148,6 +138,7 @@ function OnboardingWidgetInner() {
               onComplete={handleAuthComplete}
               socialError={socialError}
               loginError={loginError}
+              onGuestLogin={handleGuestLogin}
             />
           )}
           {flowState === "age-gate" && (

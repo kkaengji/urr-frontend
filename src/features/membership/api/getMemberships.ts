@@ -1,47 +1,32 @@
-import { fetchWithAuth } from "@/shared/api";
-import type { TierLevel, Membership } from "@/shared/types";
+import { delay } from "@/shared/lib/mockDelay";
+import type { Membership } from "@/shared/types";
 
-interface MembershipApiItem {
-  membershipId: number;
-  artistId: number;
-  artistName: string;
-  nickname: string;
-  tier: string;
-  tierLevel: number;
-  tierProgressPercent: number;
-  status: string;
-  startDate: string | null;
-  endDate: string | null;
-  active: boolean;
-}
-
-interface MembershipsResponse {
-  isSuccess: boolean;
-  statusCode: number;
-  message: string;
-  data: {
-    details: MembershipApiItem[];
-    memberships: { artistId: number; artistName: string; tier: string; endDate: string }[];
-  };
-}
-
-export async function getMemberships(userId: number): Promise<Membership[]> {
-  const res = await fetchWithAuth<MembershipsResponse>("/membership", {
-    service: "events",
-    headers: { "X-User-Id": String(userId) },
-  });
-  return res.data.data.details.map(
-    (item): Membership => ({
-      id: String(item.membershipId),
-      artistId: String(item.artistId),
-      artistName: item.artistName,
-      tier: (item.tier as TierLevel) ?? "MIST",
-      nickname: item.nickname,
-      membershipNumber: String(item.membershipId),
-      joinedAt: item.startDate ?? "",
-      expiresAt: item.endDate ?? "",
-      isActive: item.active,
-      tierProgress: { current: item.tierProgressPercent, required: 100 },
-    }),
-  );
+export async function getMemberships(_userId: number): Promise<Membership[]> {
+  await delay(350);
+  return [
+    {
+      id: "1", artistId: "1", artistName: "G-Dragon",
+      tier: "LIGHTNING", nickname: "김우르",
+      membershipNumber: "URR-0001", joinedAt: "2026-01-01", expiresAt: "2026-12-31",
+      isActive: true, tierProgress: { current: 92, required: 100 },
+    },
+    {
+      id: "2", artistId: "2", artistName: "BTS",
+      tier: "THUNDER", nickname: "김우르",
+      membershipNumber: "URR-0002", joinedAt: "2026-02-01", expiresAt: "2026-06-30",
+      isActive: true, tierProgress: { current: 74, required: 100 },
+    },
+    {
+      id: "3", artistId: "3", artistName: "aespa",
+      tier: "CLOUD", nickname: "김우르",
+      membershipNumber: "URR-0003", joinedAt: "2026-03-15", expiresAt: "2026-09-15",
+      isActive: true, tierProgress: { current: 45, required: 100 },
+    },
+    {
+      id: "4", artistId: "4", artistName: "IVE",
+      tier: "MIST", nickname: "김우르",
+      membershipNumber: "URR-0004", joinedAt: "2026-04-01", expiresAt: "2026-08-10",
+      isActive: true, tierProgress: { current: 10, required: 100 },
+    },
+  ];
 }

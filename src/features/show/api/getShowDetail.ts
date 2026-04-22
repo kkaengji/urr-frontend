@@ -1,4 +1,4 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
 import type { ShowStatus } from "./getShows";
 
 export interface ShowDetail {
@@ -16,20 +16,23 @@ export interface ShowDetail {
   seatmapJson: string;
 }
 
-interface ShowDetailApiResponse {
-  isSuccess: boolean;
-  statusCode: number;
-  message: string;
-  data: ShowDetail;
-}
-
 export async function getShowDetail(
   eventId: string | number,
   showId: string | number,
 ): Promise<ShowDetail> {
-  const res = await apiRequest<ShowDetailApiResponse>(
-    `/shows/${eventId}/shows/${showId}`,
-    { service: "events" },
-  );
-  return res.data.data;
+  await delay(300);
+  return {
+    showId: Number(showId),
+    eventId: Number(eventId),
+    sessionNo: 1,
+    startAt: "2026-06-01T18:00:00+09:00",
+    endAt: "2026-06-01T20:30:00+09:00",
+    capacity: 15000,
+    saleOpenAt: "2026-04-20T10:00:00+09:00",
+    saleCloseAt: "2026-06-01T17:00:00+09:00",
+    status: "ON_SALE",
+    active: true,
+    seatmapVersion: 1,
+    seatmapJson: "",
+  };
 }

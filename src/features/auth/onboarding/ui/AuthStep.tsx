@@ -16,6 +16,7 @@ interface AuthStepProps {
   }) => void;
   socialError?: "kakao" | "naver" | null;
   loginError?: string | null;
+  onGuestLogin?: () => void;
 }
 
 function KakaoIcon() {
@@ -61,6 +62,7 @@ export function AuthStep({
   onComplete,
   socialError,
   loginError,
+  onGuestLogin,
 }: AuthStepProps) {
   const [mode, setMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
@@ -145,8 +147,8 @@ export function AuthStep({
       {/* Social login buttons */}
       <div className="mt-10 space-y-3 w-full">
         <button
-          onClick={() => onComplete({ provider: "kakao" })}
-          className="w-full h-12 rounded-lg bg-[#FEE500] text-[#191919] font-medium text-sm flex items-center justify-center gap-2 hover:bg-[#FEE500]/90 transition-colors cursor-pointer"
+          disabled
+          className="w-full h-12 rounded-lg bg-[#FEE500]/40 text-[#191919]/50 font-medium text-sm flex items-center justify-center gap-2 cursor-not-allowed"
         >
           <KakaoIcon />
           카카오로 시작하기
@@ -159,6 +161,16 @@ export function AuthStep({
           <NaverIcon />
           네이버로 시작하기
         </button>
+
+        {onGuestLogin && (
+          <button
+            type="button"
+            onClick={onGuestLogin}
+            className="w-full h-12 rounded-lg border border-border text-sm font-medium hover:bg-[#F3F2F0] transition-colors cursor-pointer"
+          >
+            게스트로 둘러보기
+          </button>
+        )}
       </div>
 
       {/* Social login error */}

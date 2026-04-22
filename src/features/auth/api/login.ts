@@ -1,17 +1,28 @@
-import { fetchWithAuth } from "@/shared/api";
-import type { ApiBaseResponse, AuthResponseData } from "../model/types";
+import { delay } from "@/shared/lib/mockDelay";
+import type { AuthResponseData } from "../model/types";
 
 export async function login(
-  email: string,
-  password: string,
+  _email: string,
+  _password: string,
 ): Promise<AuthResponseData> {
-  const res = await fetchWithAuth<ApiBaseResponse<AuthResponseData>>(
-    "/auth/login",
-    {
-      method: "POST",
-      body: { email, password },
-      service: "users",
+  await delay(600);
+  return {
+    tokens: {
+      accessToken: "mock-access-token",
+      tokenType: "Bearer",
+      expiresInSeconds: 3600,
     },
-  );
-  return res.data.data;
+    user: {
+      userId: 1,
+      email: _email,
+      nickname: "김우르",
+      role: "USER",
+      onboardingCompleted: true,
+      marketingConsent: true,
+      pushConsent: true,
+      smsConsent: false,
+    },
+    onboardingRequired: false,
+    nextPath: "/",
+  };
 }

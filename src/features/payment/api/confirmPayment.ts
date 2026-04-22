@@ -1,4 +1,4 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
 
 interface ConfirmPaymentParams {
   paymentKey: string;
@@ -17,25 +17,17 @@ export interface ConfirmPaymentResponse {
   approvedAt: string;
 }
 
-interface ConfirmPaymentApiResponse {
-  isSuccess: boolean;
-  statusCode: number;
-  message: string;
-  data: ConfirmPaymentResponse;
-}
-
 export async function confirmPayment(
   params: ConfirmPaymentParams,
 ): Promise<ConfirmPaymentResponse> {
-  const { userId, ...body } = params;
-  const res = await apiRequest<ConfirmPaymentApiResponse>(
-    "/payments/confirm",
-    {
-      method: "POST",
-      service: "payments",
-      headers: { "X-User-Id": String(userId) },
-      body,
-    },
-  );
-  return res.data.data;
+  await delay(600);
+  return {
+    paymentKey: params.paymentKey,
+    orderId: params.orderId,
+    amount: params.amount,
+    method: "카드",
+    referenceId: `mock-ref-${Date.now()}`,
+    status: "DONE",
+    approvedAt: new Date().toISOString(),
+  };
 }

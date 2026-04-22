@@ -1,4 +1,4 @@
-import { apiRequest } from "@/shared/api/client";
+import { delay } from "@/shared/lib/mockDelay";
 
 export interface SubscribeMembershipResponse {
   membershipId: number;
@@ -7,24 +7,15 @@ export interface SubscribeMembershipResponse {
   pendingExpiresAt: string;
 }
 
-interface SubscribeMembershipApiResponse {
-  isSuccess: boolean;
-  statusCode: number;
-  message: string;
-  data: SubscribeMembershipResponse;
-}
-
 export async function subscribeMembership(
-  artistId: string | number,
-  userId: string | number,
+  _artistId: string | number,
+  _userId: string | number,
 ): Promise<SubscribeMembershipResponse> {
-  const res = await apiRequest<SubscribeMembershipApiResponse>(
-    `/artists/${artistId}/membership`,
-    {
-      method: "POST",
-      service: "events",
-      headers: { "X-User-Id": String(userId) },
-    },
-  );
-  return res.data.data;
+  await delay(500);
+  return {
+    membershipId: 100,
+    orderId: `mock-sub-${Date.now()}`,
+    paymentId: "mock-pay-001",
+    pendingExpiresAt: "2026-12-31T23:59:59+09:00",
+  };
 }

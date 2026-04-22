@@ -28,10 +28,9 @@ function OnboardingGuard({ children }: { children: ReactNode }) {
       return;
     }
     if (isError) {
-      // fetchMe 실패 (CORS 등) — 잔존 토큰 초기화 후 랜딩으로 이동
       tokenStore.clearToken();
       queryClient.clear();
-      router.replace("/landing");
+      router.replace("/onboarding");
     }
   }, [user, isLoading, isError, router, queryClient]);
 

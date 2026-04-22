@@ -1,14 +1,9 @@
-import { fetchWithAuth } from "@/shared/api";
+import { delay } from "@/shared/lib/mockDelay";
 
 export async function cancelMembership(
-  orderId: string,
-  userId: number,
-  reason: string = "PAYMENT_CANCELED"
+  _orderId: string,
+  _userId: number,
+  _reason: string = "PAYMENT_CANCELED",
 ): Promise<void> {
-  await fetchWithAuth("/artists/memberships/cancel", {
-    method: "POST",
-    service: "events",
-    headers: { "X-User-Id": String(userId) },
-    body: { orderId, reason },
-  });
+  await delay(400);
 }
