@@ -4,7 +4,7 @@ import { useState } from "react";
 import { cn } from "@/shared/lib/utils";
 import { PerformanceInfoTab } from "./PerformanceInfoTab";
 import { SalesInfoTab } from "./SalesInfoTab";
-import type { EventDetail } from "@/shared/lib/mocks/event-detail";
+import type { EventDetail } from "@/features/event";
 
 type TabKey = "performance" | "sales";
 

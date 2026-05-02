@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, Bell, ChevronRight } from "lucide-react";
 import { Button } from "@/shared/ui";
-import { getArtistById } from "@/shared/lib/mocks/artists";
 import { useNotifications } from "@/features/notification";
 
 interface BreadcrumbItem {
@@ -29,9 +28,8 @@ function useBreadcrumbs(): BreadcrumbItem[] {
   } else if (segments[0] === "artists") {
     crumbs.push({ label: "아티스트", href: "/artists" });
     if (segments[1]) {
-      const artist = getArtistById(segments[1]);
       crumbs.push({
-        label: artist?.name ?? segments[1],
+        label: segments[1],
         href: `/artists/${segments[1]}`,
       });
       if (segments[2] === "community") {

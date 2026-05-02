@@ -1,7 +1,8 @@
+import Image from "next/image";
 import { Clock, Info, Crown, ShieldCheck, Mic2 } from "lucide-react";
 import { TierBadge } from "@/entities/user";
 import { PriceDisplay } from "@/shared/ui";
-import type { EventDetail } from "@/shared/lib/mocks/event-detail";
+import type { EventDetail } from "@/features/event";
 
 interface PerformanceInfoTabProps {
   event: EventDetail;
@@ -156,9 +157,24 @@ export function PerformanceInfoTab({ event }: PerformanceInfoTabProps) {
       {/* 5. 공연상세 / 출연진 */}
       <SectionCard icon={Mic2} title="공연상세 / 출연진정보">
         <div className="space-y-3">
-          <div className="text-sm whitespace-pre-line leading-relaxed">
-            {event.performanceDescription}
-          </div>
+          {event.detailInfoImage && (
+            <div className="relative w-full">
+              <Image
+                src={event.detailInfoImage}
+                alt="공연 상세 정보"
+                width={0}
+                height={0}
+                sizes="100vw"
+                className="w-full h-auto"
+                unoptimized
+              />
+            </div>
+          )}
+          {!event.detailInfoImage && (
+            <div className="text-sm whitespace-pre-line leading-relaxed">
+              {event.performanceDescription}
+            </div>
+          )}
           {event.castInfo && (
             <div className="pt-3 border-t border-border">
               <p className="text-sm">

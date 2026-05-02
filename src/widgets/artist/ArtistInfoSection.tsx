@@ -2,7 +2,7 @@
 
 import { Mic2 } from "lucide-react";
 import type { Artist } from "@/shared/types";
-import type { ArtistExtendedInfo } from "@/shared/lib/mocks/artist-page";
+import type { ArtistExtendedInfo } from "@/features/artist";
 
 interface ArtistInfoSectionProps {
   artist: Artist;

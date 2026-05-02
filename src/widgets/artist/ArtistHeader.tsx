@@ -6,7 +6,7 @@ import { Heart, Users } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui";
 import { TierBadge } from "@/entities/user";
-import { getArtistGradient } from "@/shared/lib/mocks/home";
+import { getArtistGradient } from "@/shared/lib/artistGradients";
 import { formatCompactNumber } from "@/shared/lib/format";
 import type { Artist, Membership } from "@/shared/types";
 

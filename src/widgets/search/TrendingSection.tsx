@@ -1,7 +1,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { trendingSearchTerms } from "@/shared/lib/mocks/search";
+const trendingSearchTerms: string[] = [];
 
 interface TrendingSectionProps {
   onSelect: (term: string) => void;

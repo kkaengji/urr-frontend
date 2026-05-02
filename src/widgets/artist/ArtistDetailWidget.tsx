@@ -9,12 +9,10 @@ import { getArtist, followArtist, unfollowArtist } from "@/features/artist";
 import { useCurrentUser } from "@/features/auth/model/useCurrentUser";
 import { getArtistEvents } from "@/features/event";
 import type { EventSummary } from "@/features/event";
-import {
-  getArtistExtendedInfo,
-} from "@/shared/lib/mocks/artist-page";
+import { findMockArtist } from "@/shared/lib/mocks/artists";
+import type { ArtistExtendedInfo } from "@/features/artist";
 import { getTransferPosts } from "@/features/transfer";
 import type { Artist, Event, TierLevel } from "@/shared/types";
-import { getCommunityPostsByArtistId } from "@/shared/lib/mocks/community";
 import { ArtistHeader } from "./ArtistHeader";
 import { ArtistHomeTab } from "./ArtistHomeTab";
 import { ArtistCommunityTab } from "./ArtistCommunityTab";
@@ -138,7 +136,7 @@ export function ArtistDetailWidget({ artistId }: ArtistDetailWidgetProps) {
         isActive: new Date(membershipInfo.endDate) > new Date(),
       }
     : undefined;
-  const extendedInfo = getArtistExtendedInfo(artist.id);
+  const extendedInfo: ArtistExtendedInfo | undefined = findMockArtist(artist.id)?.extendedInfo;
   const allEvents: Event[] = artistEventsData
     .filter((e: EventSummary) => String(e.artistId) === artistId)
     .map((e: EventSummary) => ({
@@ -159,7 +157,7 @@ export function ArtistDetailWidget({ artistId }: ArtistDetailWidgetProps) {
   const upcoming = allEvents.filter((e) => e.status === "open");
   const past = allEvents.filter((e) => e.status !== "open");
   const nextEvent = upcoming[0];
-  const communityPosts = getCommunityPostsByArtistId(artist.id);
+  const communityPosts: import("@/shared/types").CommunityPost[] = [];
 
   const eventPosterByTitle = new Map(allEvents.map((e) => [e.title, e.poster]));
   const enrichedTransferListings = transferListings.map((l) => ({

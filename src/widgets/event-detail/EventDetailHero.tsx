@@ -3,7 +3,7 @@ import { Calendar, Clock, MapPin, Users, Heart, Share2 } from "lucide-react";
 import { BookingStatusBadge } from "@/entities/event";
 import { EventTagBadge } from "@/entities/event";
 import { parseApiDate } from "@/shared/lib/utils";
-import type { EventDetail } from "@/shared/lib/mocks/event-detail";
+import type { EventDetail } from "@/features/event";
 
 interface EventDetailHeroProps {
   event: EventDetail;

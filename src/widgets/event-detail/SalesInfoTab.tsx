@@ -8,7 +8,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { PriceDisplay } from "@/shared/ui";
-import type { EventDetail } from "@/shared/lib/mocks/event-detail";
+import type { EventDetail } from "@/features/event";
 
 interface SalesInfoTabProps {
   event: EventDetail;

@@ -11,7 +11,7 @@ import type { EventDetailResponse } from "@/features/event";
 import type { ShowSummary } from "@/features/show";
 import type { PresalePolicy } from "@/features/membership";
 import type { TierLevel, TierWindow } from "@/shared/types";
-import type { EventDetail } from "@/shared/lib/mocks/event-detail";
+import type { EventDetail } from "@/features/event";
 import { EventDetailHero } from "./EventDetailHero";
 import { EventDetailTabs } from "./EventDetailTabs";
 import { EventBookingSidebar } from "./EventBookingSidebar";
@@ -50,14 +50,15 @@ function mapToEventDetail(
 
   return {
     id: String(event.eventId),
-    artistId: String(event.artistId),
-    artistName: event.artistName,
+    artistId: event.artistId != null ? String(event.artistId) : "",
+    artistName: event.artistName ?? "",
     title: event.title,
     subtitle: event.subtitle,
     venue: event.venueTemplateName,
     venueAddress: event.venueAddress,
     dates,
     poster: event.posterImageUrl,
+    detailInfoImage: event.detailInfoImageUrl,
     status: event.active ? "open" : "closed",
     category: event.category,
     tags: event.tags,

@@ -8,7 +8,42 @@ import { cn } from "@/shared/lib/utils";
 import { ScrollableRow } from "@/shared/ui";
 import { useArtists } from "@/features/artist";
 import { useCurrentUser } from "@/features/auth/model/useCurrentUser";
-import { getArtistGradient, newArtistCards } from "@/shared/lib/mocks/home";
+import { getArtistGradient } from "@/shared/lib/artistGradients";
+
+interface NewArtistCard {
+  id: string;
+  name: string;
+  profileImage: string;
+  label: string;
+  title: string;
+  description: string;
+}
+const newArtistCards: NewArtistCard[] = [
+  {
+    id: "7",
+    name: "KiiiKiii",
+    profileImage: "/artists/7/profile.jpg",
+    label: "신인상 수상",
+    title: "KiiiKiii, 2024 멜론뮤직어워드 신인상 수상",
+    description: "데뷔 첫 해 신인상을 수상하며 K-POP 씬의 차세대 라이징 스타로 자리매김.",
+  },
+  {
+    id: "3",
+    name: "aespa",
+    profileImage: "/artists/3/profile.jpg",
+    label: "컴백 확정",
+    title: "aespa 정규 3집 컴백 확정, 세계관 완결편 예고",
+    description: "ae 세계관의 완결편을 담은 정규 3집으로 글로벌 팬들의 기대를 한 몸에 받고 있는 aespa.",
+  },
+  {
+    id: "4",
+    name: "IVE",
+    profileImage: "/artists/4/profile.jpg",
+    label: "단독 콘서트",
+    title: "IVE 첫 단독 월드투어 'SHOW WHAT I HAVE' 개최",
+    description: "데뷔 3년 만에 단독 월드투어를 확정하며 글로벌 K-POP 씬의 핵심 그룹으로 성장한 IVE.",
+  },
+];
 
 const labelBadgeStyle: Record<string, string> = {
   "신인상 수상": "bg-white border-border text-destructive",

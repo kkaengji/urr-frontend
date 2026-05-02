@@ -3,7 +3,7 @@ import { cn } from "@/shared/lib/utils";
 import { Calendar } from "lucide-react";
 import { PriceDisplay, FaceValueBadge } from "@/shared/ui";
 import { TierBadge } from "@/entities/user";
-import { getArtistGradient } from "@/shared/lib/mocks/home";
+import { getArtistGradient } from "@/shared/lib/artistGradients";
 import { formatDateShort } from "@/shared/lib/format";
 import type { TransferListing, Event } from "@/shared/types";
 

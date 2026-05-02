@@ -7,7 +7,7 @@ import type {
   TransferListing,
   CommunityPost,
 } from "@/shared/types";
-import type { ArtistExtendedInfo } from "@/shared/lib/mocks/artist-page";
+import type { ArtistExtendedInfo } from "@/features/artist";
 import { MembershipSection } from "./MembershipSection";
 import { ArtistInfoSection } from "./ArtistInfoSection";
 import { CommunitySection } from "./CommunitySection";

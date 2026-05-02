@@ -17,7 +17,12 @@ import type {
   EventDate,
   ConfirmationData,
 } from "@/shared/types";
-import { MAX_SEATS_PER_TIER } from "@/shared/lib/mocks/seats";
+const MAX_SEATS_PER_TIER: Record<string, number> = {
+  LIGHTNING: 4,
+  THUNDER: 4,
+  CLOUD: 4,
+  MIST: 4,
+};
 import { getShows } from "@/features/show/api/getShows";
 import { getSections } from "@/features/show/api/getSections";
 import { getSeatsSummary } from "@/features/booking/api/getSeatsSummary";

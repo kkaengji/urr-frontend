@@ -2,7 +2,7 @@ import Image from "next/image";
 import { cn } from "@/shared/lib/utils";
 import { Calendar, MapPin } from "lucide-react";
 import { BookingStatusBadge } from "./BookingStatusBadge";
-import { getArtistGradient } from "@/shared/lib/mocks/home";
+import { getArtistGradient } from "@/shared/lib/artistGradients";
 import { formatDateShort } from "@/shared/lib/format";
 import type { Event } from "@/shared/types";
 

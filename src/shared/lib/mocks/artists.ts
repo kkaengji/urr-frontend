@@ -1,170 +1,150 @@
-import type { Artist } from "@/shared/types";
+import type { ArtistCategory } from "@/features/artist/api/getArtists";
+import type {
+  ArtistDetail,
+  ArtistExtendedInfo,
+} from "@/features/artist/api/getArtist";
 
-export const mockArtists: Artist[] = [
+export interface MockArtist {
+  id: number;
+  name: string;
+  profileImageUrl: string;
+  bannerImageUrl?: string;
+  bio?: string;
+  followerCount?: number;
+  category?: ArtistCategory;
+  extendedInfo?: ArtistExtendedInfo;
+}
+
+export const mockArtists: MockArtist[] = [
   {
-    id: "1",
-    name: "G-Dragon",
-    avatar: "/artists/1/profile.png",
-    banner: "/artists/1/banner.png",
-    bio: "BIGBANG 리더이자 솔로 아티스트. K-POP의 아이콘.",
-    followerCount: 2450000,
-    category: "solo",
-  },
-  {
-    id: "2",
-    name: "BTS",
-    avatar: "/artists/2/profile.png",
-    banner: "/artists/2/banner.png",
-    bio: "글로벌 K-POP 보이그룹. 전 세계를 사로잡은 음악과 메시지.",
-    followerCount: 8900000,
-    category: "boygroup",
-  },
-  {
-    id: "3",
-    name: "aespa",
-    avatar: "/artists/3/profile.png",
-    banner: "/artists/3/banner.png",
-    bio: "SM Entertainment 4인조 걸그룹. 메타버스 세계관의 선두주자.",
-    followerCount: 3200000,
-    category: "girlgroup",
-  },
-  {
-    id: "4",
-    name: "IVE",
-    avatar: "/artists/4/profile.png",
-    banner: "/artists/4/profile.png",
-    bio: 'Starship Entertainment 6인조 걸그룹. "나"를 당당하게 표현하는 음악.',
-    followerCount: 2100000,
-    category: "girlgroup",
-  },
-  {
-    id: "5",
-    name: "BLACKPINK",
-    avatar: "/artists/5/profile.png",
-    banner: "/artists/5/banner.png",
-    bio: "YG Entertainment 글로벌 걸그룹. 음악, 패션, 퍼포먼스의 완성형.",
-    followerCount: 7500000,
-    category: "girlgroup",
-  },
-  {
-    id: "6",
-    name: "Stray Kids",
-    avatar: "/artists/6/profile.png",
-    banner: "/artists/6/banner.png",
-    bio: "JYP Entertainment 8인조 보이그룹. 자체 프로듀싱의 대명사.",
-    followerCount: 4800000,
-    category: "boygroup",
-  },
-  {
-    id: "7",
-    name: "SEVENTEEN",
-    avatar: "/artists/7/profile.png",
-    banner: "/artists/7/banner.jpg",
-    bio: "PLEDIS Entertainment 13인조 보이그룹. 자체 안무, 자작곡의 아이콘.",
-    followerCount: 5600000,
-    category: "boygroup",
-  },
-  {
-    id: "8",
-    name: "NewJeans",
-    avatar: "/artists/8/profile.png",
-    banner: "/home/featured-newjeans.jpg",
-    bio: "ADOR 5인조 걸그룹. 새로운 시대의 K-POP 트렌드세터.",
-    followerCount: 6100000,
-    category: "girlgroup",
-  },
-  {
-    id: "9",
-    name: "(G)I-DLE",
-    avatar: "/artists/9/profile.png",
-    banner: "/home/featured-gi-dle.jpg",
-    bio: "CUBE Entertainment 5인조 걸그룹. 전원 자작곡 걸그룹의 선두주자.",
-    followerCount: 3400000,
-    category: "girlgroup",
-  },
-  {
-    id: "10",
-    name: "TXT",
-    avatar: "/artists/10/profile.png",
-    banner: "/home/featured-txt.png",
-    bio: "BIGHIT MUSIC 5인조 보이그룹. 독보적 세계관과 음악 실험.",
-    followerCount: 4200000,
-    category: "boygroup",
-  },
-  {
-    id: "11",
-    name: "DAY6",
-    avatar: "/artists/11/profile.png",
-    banner: "/artists/11/banner.png",
-    bio: "JYP Entertainment 밴드. 직접 작곡하는 셀프 프로듀싱 밴드.",
-    followerCount: 2800000,
-    category: "boygroup",
-  },
-  {
-    id: "12",
-    name: "TWS",
-    avatar: "/artists/12/profile.png",
-    banner: "/artists/12/banner.jpg",
-    bio: "Starship Entertainment 7인조 보이그룹. 진정성 있는 감성으로 주목받는 신인.",
-    followerCount: 1200000,
-    category: "boygroup",
-  },
-  {
-    id: "13",
-    name: "악동뮤지션",
-    avatar: "/artists/13/profile.png",
-    banner: "/artists/13/banner.png",
-    bio: "YG Entertainment 남매 듀오. 자작곡으로 감성을 전하는 인디-팝 아이콘.",
-    followerCount: 1420000,
-    category: "coedgroup",
-  },
-  {
-    id: "14",
-    name: "권정렬",
-    avatar: "/artists/14/profile.jpg",
-    banner: "/home/featured-kwon-jungyeol.png",
-    bio: "10CM의 보컬리스트. 감성 팝으로 많은 사람의 마음을 울리는 싱어송라이터.",
-    followerCount: 1420000,
-    category: "solo",
-  },
-  {
-    id: "15",
-    name: "RIIZE",
-    avatar: "/artists/15/profile.png",
-    banner: "/home/featured-riize.png",
-    bio: "SM Entertainment 7인조 보이그룹. 데뷔와 동시에 음원차트 올킬.",
-    followerCount: 1420000,
-    category: "boygroup",
-  },
-  {
-    id: "16",
+    id: 1,
     name: "IU",
-    avatar: "/artists/16/profile.jpg",
-    banner: "/home/featured-iu.png",
-    bio: "카카오엔터테인먼트 솔로 아티스트. 발라드부터 팝까지, 대한민국 대표 국민 가수.",
-    followerCount: 7800000,
+    profileImageUrl: "/artists/1/profile.jpg",
+    bannerImageUrl: "/artists/1/banner.jpeg",
+    bio: "2008년 데뷔 후 꾸준한 사랑을 받고 있는 국민 솔로 아티스트. 음악, 연기, 예능을 넘나드는 만능 엔터테이너.",
+    followerCount: 7_800_000,
     category: "solo",
+    extendedInfo: {
+      artistId: "1",
+      debutDate: "2008.09.18",
+      agency: "KAKAO Entertainment",
+      genres: ["Ballad", "Pop", "K-POP"],
+    },
   },
   {
-    id: "17",
-    name: "NMIXX",
-    avatar: "/artists/17/profile.png",
-    banner: "/artists/17/banner.png",
-    bio: "JYP Entertainment 6인조 걸그룹. 믹스팝 장르를 개척하는 차세대 걸그룹.",
-    followerCount: 2800000,
+    id: 2,
+    name: "BTS",
+    profileImageUrl: "/artists/2/profile.jpg",
+    bannerImageUrl: "/artists/2/banner.jpg",
+    bio: "2013년 데뷔한 글로벌 보이그룹. 전 세계 음악 시장을 석권한 K-POP의 아이콘.",
+    followerCount: 50_000_000,
+    category: "boygroup",
+    extendedInfo: {
+      artistId: "2",
+      debutDate: "2013.06.13",
+      agency: "HYBE",
+      genres: ["Hip-hop", "Pop", "R&B"],
+      memberCount: 7,
+    },
+  },
+  {
+    id: 3,
+    name: "aespa",
+    profileImageUrl: "/artists/3/profile.jpg",
+    bannerImageUrl: "/artists/3/banner.png",
+    bio: "2020년 데뷔한 SM엔터테인먼트의 4인조 걸그룹. 아바타 세계관으로 주목받는 차세대 K-POP 아이콘.",
+    followerCount: 12_000_000,
     category: "girlgroup",
+    extendedInfo: {
+      artistId: "3",
+      debutDate: "2020.11.17",
+      agency: "SM Entertainment",
+      genres: ["Pop", "Electronic", "K-POP"],
+      memberCount: 4,
+    },
   },
   {
-    id: "18",
-    name: "최예나",
-    avatar: "/artists/18/profile.jpg",
-    banner: "/artists/18/banner.jpg",
-    bio: "아이즈원 출신. 특유의 에너지와 독보적인 퍼포먼스로 팬들의 마음을 사로잡는 K-POP 아이콘.",
-    followerCount: 2800000,
-    category: "solo",
+    id: 4,
+    name: "IVE",
+    profileImageUrl: "/artists/4/profile.jpg",
+    bannerImageUrl: "/artists/4/banner.jpg",
+    bio: "2021년 데뷔한 HYBE의 5인조 걸그룹. 매력적인 무대와 뛰어난 음악성으로 많은 사랑을 받고 있는 K-POP 아티스트.",
+    followerCount: 15_000_000,
+    category: "girlgroup",
+    extendedInfo: {
+      artistId: "4",
+      debutDate: "2021.02.11",
+      agency: "HYBE",
+      genres: ["Pop", "Electronic", "K-POP"],
+      memberCount: 5,
+    },
+  },
+  {
+    id: 5,
+    name: "LUCY",
+    profileImageUrl: "/artists/5/profile.jpg",
+    bannerImageUrl: "/artists/5/banner.jpg",
+    bio: "2019년 데뷔한 4인조 밴드. 직접 작사·작곡한 감성적인 음악과 뛰어난 연주 실력으로 인디씬을 넘어 대중적인 사랑을 받고 있는 안테나 소속 밴드.",
+    followerCount: 800_000,
+    category: "boygroup",
+    extendedInfo: {
+      artistId: "5",
+      debutDate: "2019.05.17",
+      agency: "Antenna Entertainment",
+      genres: ["Indie Pop", "Alt-Rock", "K-Pop"],
+      memberCount: 4,
+    },
+  },
+  {
+    id: 6,
+    name: "DAY6",
+    profileImageUrl: "/artists/6/profile.jpg",
+    bannerImageUrl: "/artists/6/banner.png",
+    bio: "2015년 데뷔한 JYP엔터테인먼트의 밴드. 직접 작사·작곡하며 K-POP 밴드의 새 지평을 열었다.",
+    followerCount: 5_000_000,
+    category: "boygroup",
+    extendedInfo: {
+      artistId: "6",
+      debutDate: "2015.09.07",
+      agency: "JYP Entertainment",
+      genres: ["Rock", "Pop", "Ballad"],
+      memberCount: 4,
+    },
+  },
+  {
+    id: 7,
+    name: "KiiiKiii",
+    profileImageUrl: "/artists/7/profile.jpg",
+    bannerImageUrl: "/artists/7/banner.jpg",
+    bio: "2024년 데뷔한 신예 걸그룹. 개성 넘치는 퍼포먼스와 음악으로 주목받는 라이징 아티스트.",
+    followerCount: 800_000,
+    category: "girlgroup",
+    extendedInfo: {
+      artistId: "7",
+      debutDate: "2024.01.01",
+      agency: "IST Entertainment",
+      genres: ["Pop", "Dance", "K-POP"],
+      memberCount: 5,
+    },
   },
 ];
 
-export function getArtistById(id: string): Artist | undefined {
-  return mockArtists.find((a) => a.id === id);
+export function findMockArtist(
+  artistId: string | number,
+): MockArtist | undefined {
+  return mockArtists.find((a) => a.id === Number(artistId));
+}
+
+export function toArtistDetail(a: MockArtist): ArtistDetail {
+  return {
+    id: a.id,
+    name: a.name,
+    profileImageUrl: a.profileImageUrl,
+    description: a.bio ?? "",
+    isFollowing: false,
+    followerCount: a.followerCount,
+    bio: a.bio,
+    bannerImageUrl: a.bannerImageUrl,
+    category: a.category,
+  };
 }

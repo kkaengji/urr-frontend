@@ -7,4 +7,8 @@ export type {
   EventDetailOrganizer,
   EventDetailSection,
   EventDetailCancellationRule,
+  EventDetail,
+  EventCategory,
+  EventCategoryFilter,
 } from "./api/getEventDetail";
+export { eventCategoryFilters } from "./api/getEventDetail";

@@ -12,8 +12,20 @@ import {
   eventCategoryFilters,
   type EventCategory,
   type EventCategoryFilter,
-  type EventListItem,
-} from "@/shared/lib/mocks/events-page";
+} from "@/features/event";
+
+interface EventListItem {
+  id: string;
+  artistId: string;
+  artistName: string;
+  title: string;
+  venue: string;
+  dateRange: string;
+  status: string;
+  category: EventCategory;
+  tags: string[];
+  poster: string;
+}
 
 /* ------------------------------------------------------------------ */
 /*  PopularEventCard — carousel card with poster overlay              */

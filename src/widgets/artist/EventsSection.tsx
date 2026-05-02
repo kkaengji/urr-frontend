@@ -6,7 +6,7 @@ import { Calendar, MapPin, ChevronRight, Ticket } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui";
 import { BookingStatusBadge } from "@/entities/event";
-import { getArtistGradient } from "@/shared/lib/mocks/home";
+import { getArtistGradient } from "@/shared/lib/artistGradients";
 import { formatDateFull, formatDateShort } from "@/shared/lib/format";
 import type { Artist, Event } from "@/shared/types";
 

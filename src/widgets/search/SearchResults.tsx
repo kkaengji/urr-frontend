@@ -3,11 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Users, Calendar } from "lucide-react";
-import { getArtistGradient } from "@/shared/lib/mocks/home";
+import { getArtistGradient } from "@/shared/lib/artistGradients";
 import { BookingStatusBadge } from "@/entities/event";
 import { formatDateCompact } from "@/shared/lib/format";
 import type { Artist } from "@/shared/types";
-import type { SearchableEvent } from "@/shared/lib/mocks/search";
+import type { Event } from "@/shared/types";
+
+type SearchableEvent = Event & { artistName: string };
 
 function formatFollowers(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;

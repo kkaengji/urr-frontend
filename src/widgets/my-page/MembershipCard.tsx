@@ -7,7 +7,7 @@ import { Check, ChevronDown, Loader2, Pencil, RefreshCw, XCircle } from 'lucide-
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { TierBadge } from '@/entities/user'
-import { getArtistGradient } from '@/shared/lib/mocks/home'
+import { getArtistGradient } from '@/shared/lib/artistGradients'
 import { cn } from '@/shared/lib/utils'
 import { formatDateNumeric } from '@/shared/lib/format'
 import type { Membership, TierLevel } from '@/shared/types'

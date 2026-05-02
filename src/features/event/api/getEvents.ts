@@ -1,5 +1,4 @@
 import { delay } from "@/shared/lib/mockDelay";
-import type { EventTag } from "@/entities/event";
 
 export type EventApiCategory = "concert" | "fanmeeting" | "festival" | "musical" | "etc";
 
@@ -17,7 +16,7 @@ export function getEventCategoryLabel(category: EventApiCategory | string): stri
 
 export interface EventSummary {
   eventId: number;
-  artistId: number;
+  artistId?: number;
   title: string;
   subtitle?: string;
   description: string;
@@ -29,23 +28,20 @@ export interface EventSummary {
   posterImageUrl?: string;
   artistName?: string;
   category?: EventApiCategory;
-  tags?: EventTag[];
+  tags?: string[];
   endDate?: string;
 }
 
 const mockEventSummaries: EventSummary[] = [
-  { eventId: 1, artistId: 1, title: "G-Dragon 2026 DOME TOUR", description: "G-Dragon 2026 국내 돔투어", venueTemplateId: 1, venueTemplateName: "KSPO DOME", venueAddress: "서울 송파구 올림픽로 424", openDate: "2026-06-01", endDate: "2026-06-02", active: true, posterImageUrl: "/artists/1/events/upcoming_gdragon-2026-mama.png", artistName: "G-Dragon", category: "concert" },
-  { eventId: 2, artistId: 2, title: "BTS YET TO COME ENCORE IN SEOUL", description: "BTS 앙코르 콘서트", venueTemplateId: 2, venueTemplateName: "잠실종합운동장 주경기장", venueAddress: "서울 송파구 올림픽로 25", openDate: "2026-08-01", endDate: "2026-08-03", active: true, posterImageUrl: "/artists/2/events/event_bts-yet-to-come-in-cinema.png", artistName: "BTS", category: "concert" },
-  { eventId: 3, artistId: 2, title: "BTS 2026 FANMEETING", description: "BTS 팬미팅", venueTemplateId: 3, venueTemplateName: "올림픽 체조 경기장", venueAddress: "서울 송파구 올림픽로 424", openDate: "2026-03-01", endDate: "2026-03-01", active: true, posterImageUrl: "/artists/2/events/event_bts-yet-to-come-in-cinema.png", artistName: "BTS", category: "fanmeeting" },
-  { eventId: 4, artistId: 3, title: "aespa LIVE SYNK : PARALLEL", description: "aespa 단독 콘서트", venueTemplateId: 1, venueTemplateName: "KSPO DOME", venueAddress: "서울 송파구 올림픽로 424", openDate: "2026-09-20", endDate: "2026-09-21", active: true, posterImageUrl: "/artists/3/events/event_aespa-live-synk-parallel.png", artistName: "aespa", category: "concert" },
-  { eventId: 5, artistId: 4, title: "IVE WORLD TOUR SHOW WHAT I AM", description: "IVE 월드투어 서울", venueTemplateId: 1, venueTemplateName: "KSPO DOME", venueAddress: "서울 송파구 올림픽로 424", openDate: "2026-06-20", endDate: "2026-06-22", active: true, posterImageUrl: "/artists/4/events/event_ive-show-what-i-am.png", artistName: "IVE", category: "concert" },
-  { eventId: 6, artistId: 4, title: "IVE FANCON 2026", description: "IVE 팬콘서트", venueTemplateId: 3, venueTemplateName: "올림픽 체조 경기장", venueAddress: "서울 송파구 올림픽로 424", openDate: "2026-04-05", endDate: "2026-04-06", active: true, posterImageUrl: "/artists/4/events/event_ive-show-what-i-am.png", artistName: "IVE", category: "fanmeeting" },
-  { eventId: 7, artistId: 5, title: "BLACKPINK BORN PINK WORLD TOUR SEOUL", description: "블랙핑크 월드투어 서울", venueTemplateId: 4, venueTemplateName: "고척스카이돔", venueAddress: "서울 구로구 경인로 430", openDate: "2026-07-15", endDate: "2026-07-16", active: true, posterImageUrl: "/artists/5/events/event_blackpink-born-pink.png", artistName: "BLACKPINK", category: "concert" },
-  { eventId: 8, artistId: 6, title: "Stray Kids 5-STAR DOME TOUR 2026", description: "스트레이 키즈 돔투어", venueTemplateId: 1, venueTemplateName: "KSPO DOME", venueAddress: "서울 송파구 올림픽로 424", openDate: "2026-05-10", endDate: "2026-05-11", active: true, posterImageUrl: "/artists/6/events/event_stray-kids-domin-world-tour.png", artistName: "Stray Kids", category: "concert" },
-  { eventId: 9, artistId: 7, title: "SEVENTEEN WORLD TOUR BE THE SUN", description: "세븐틴 월드투어 서울", venueTemplateId: 2, venueTemplateName: "잠실종합운동장 주경기장", venueAddress: "서울 송파구 올림픽로 25", openDate: "2026-05-25", endDate: "2026-05-27", active: true, posterImageUrl: "/artists/7/events/event_seventeen-be-the-sun.png", artistName: "SEVENTEEN", category: "concert" },
-  { eventId: 10, artistId: 8, title: "NewJeans 2nd Concert", description: "뉴진스 두 번째 콘서트", venueTemplateId: 1, venueTemplateName: "KSPO DOME", venueAddress: "서울 송파구 올림픽로 424", openDate: "2026-10-01", endDate: "2026-10-02", active: true, posterImageUrl: "/artists/8/events/presale_newjeans-fan-meeting.png", artistName: "NewJeans", category: "concert" },
-  { eventId: 11, artistId: 8, title: "NewJeans × COMPLEXCON", description: "뉴진스 콤플렉스콘", venueTemplateId: 5, venueTemplateName: "Long Beach Convention Center", venueAddress: "Long Beach, CA", openDate: "2026-05-10", endDate: "2026-05-11", active: true, posterImageUrl: "/artists/8/events/event_newjeans-complexcon.png", artistName: "NewJeans", category: "festival" },
-  { eventId: 12, artistId: 16, title: "IU CONCERT 'The Golden Hour'", description: "아이유 단독 콘서트", venueTemplateId: 1, venueTemplateName: "KSPO DOME", venueAddress: "서울 송파구 올림픽로 424", openDate: "2026-11-15", endDate: "2026-11-16", active: true, posterImageUrl: "/home/featured-iu.png", artistName: "IU", category: "concert" },
+  { eventId: 2,  artistId: 2, title: "BTS WORLD TOUR 'ARIRANG' IN BUSAN",                  description: "BTS 월드투어 부산 공연",                                                             venueTemplateId: 2, venueTemplateName: "부산아시아드 주경기장",            venueAddress: "부산광역시 연제구 월드컵대로 344",   openDate: "2026-06-12", endDate: "2026-06-13", active: true, posterImageUrl: "/artists/2/events/poster.gif",  artistName: "BTS",      category: "concert"    },
+  { eventId: 4,  artistId: 3, title: "2025 aespa LIVE TOUR - SYNK : aeXIS LINE -",         description: "aespa 단독 콘서트",                                                                 venueTemplateId: 1, venueTemplateName: "KSPO DOME (올림픽 체조 경기장)", venueAddress: "서울특별시 송파구 올림픽로 424",     openDate: "2025-08-29", endDate: "2025-08-31", active: true, posterImageUrl: "/artists/3/events/poster.jpg",  artistName: "aespa",  category: "concert",   tags: ["단독판매", "인증예매"] },
+  { eventId: 5,  artistId: 5, title: "2026 LUCY 9TH CONCERT 〈ISLAND〉",                   description: "LUCY 단독 콘서트",                                                                  venueTemplateId: 1, venueTemplateName: "KSPO DOME (올림픽 체조 경기장)", venueAddress: "서울특별시 송파구 올림픽로 424",     openDate: "2026-05-16", endDate: "2026-05-17", active: true, posterImageUrl: "/artists/5/events/poster.gif",  artistName: "LUCY",   category: "concert"    },
+  { eventId: 8,  artistId: 6, title: "DAY6 10th Anniversary Tour 〈The DECADE〉 in BUSAN", description: "DAY6 데뷔 10주년 기념 투어 부산 공연",                                               venueTemplateId: 6, venueTemplateName: "벡스코 제1전시장 1~2홀",            venueAddress: "부산광역시 해운대구 APEC로 55",      openDate: "2026-05-16", endDate: "2026-05-17", active: true, posterImageUrl: "/artists/6/events/poster.gif",  artistName: "DAY6",     category: "concert"    },
+  { eventId: 9,  artistId: 7, title: "2026 KiiiKiii FAN CONCERT 〈KiiiKiii FesTiiival〉", description: "KiiiKiii 팬콘서트",                                                                  venueTemplateId: 7, venueTemplateName: "블루스퀘어 우리WON뱅킹홀",          venueAddress: "서울특별시 용산구 한남대로 347",     openDate: "2026-05-16", endDate: "2026-05-17", active: true, posterImageUrl: "/artists/7/events/poster.gif",  artistName: "KiiiKiii", category: "fanmeeting" },
+{ eventId: 13, artistId: 1, title: "2025 IU FAN MEET-UP [Bye, Summer]",                 description: "아이유의 여름 마지막을 함께하는 특별한 팬미팅. 두근두근 설레는 순간들이 가득한 행복한 시간.", venueTemplateId: 1, venueTemplateName: "KSPO DOME (올림픽 체조 경기장)", venueAddress: "서울특별시 송파구 올림픽로 424", openDate: "2025-09-13", endDate: "2025-09-14", active: true, posterImageUrl: "/artists/1/events/poster.jpg",  artistName: "IU",       category: "fanmeeting", tags: ["단독판매", "인증예매"] },
+  { eventId: 10, title: "2026 Weverse Con Festival",                                         description: "2026 위버스콘 페스티벌 CON TICKET, CON TICKET＋",                                venueTemplateId: 1, venueTemplateName: "KSPO DOME (올림픽 체조 경기장)", venueAddress: "서울특별시 송파구 올림픽로 424",     openDate: "2026-06-06", endDate: "2026-06-07", active: true, posterImageUrl: "/events/1/poster.gif",  category: "festival",  tags: ["단독판매", "얼굴패스", "안심예매"] },
+  { eventId: 11, title: "2026 서울파크뮤직페스티벌",                                          description: "2026 서울파크뮤직페스티벌 (26SPMF)",                                              venueTemplateId: 8, venueTemplateName: "올림픽공원 88잔디마당",                  venueAddress: "서울특별시 송파구 올림픽로 424",     openDate: "2026-06-20", endDate: "2026-06-21", active: true, posterImageUrl: "/events/2/poster.gif",  category: "festival",  tags: ["단독판매", "청년문화패스"] },
+  { eventId: 12, title: "오피셜히게단디즘 아시아 투어 2026 in SEOUL",                         description: "OFFICIAL HIGE DANDISM ASIA TOUR 2026 in SEOUL",                               venueTemplateId: 1, venueTemplateName: "KSPO DOME (올림픽 체조 경기장)", venueAddress: "서울특별시 송파구 올림픽로 424",     openDate: "2026-08-08", endDate: "2026-08-09", active: true, posterImageUrl: "/events/3/poster.gif",  category: "concert",   tags: ["단독판매", "안심예매"] },
 ];
 
 export async function getEvents(): Promise<EventSummary[]> {

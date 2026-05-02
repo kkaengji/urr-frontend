@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { MessageCircle, ChevronRight, Lock } from "lucide-react";
 import { Button } from "@/shared/ui";
 import { PostCard } from "@/entities/community";
-import { getArtistGradient } from "@/shared/lib/mocks/home";
+import { getArtistGradient } from "@/shared/lib/artistGradients";
 import type { Artist, Membership, CommunityPost } from "@/shared/types";
 
 interface CommunitySectionProps {

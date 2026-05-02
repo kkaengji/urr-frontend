@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { Button, SectionHeader } from "@/shared/ui";
 import { ArtistCard } from "@/entities/artist";
-import { getArtistGradient } from "@/shared/lib/mocks/home";
+import { getArtistGradient } from "@/shared/lib/artistGradients";
 import { mockUser } from "@/shared/lib/mocks/user";
 import { getHome } from "@/features/home/api/getHome";
 import { getEvents } from "@/features/event/api/getEvents";

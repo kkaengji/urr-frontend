@@ -4,7 +4,7 @@ import { Calendar, MapPin, QrCode, ArrowLeftRight, XCircle } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { PriceDisplay } from '@/shared/ui/PriceDisplay'
 import { TransferStatusBadge } from '@/shared/ui/TransferStatusBadge'
-import { getArtistGradient } from '@/shared/lib/mocks/home'
+import { getArtistGradient } from '@/shared/lib/artistGradients'
 import { formatDateShort } from '@/shared/lib/format'
 import type { Ticket, Event } from '@/shared/types'
 

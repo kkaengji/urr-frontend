@@ -21,6 +21,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -34,39 +35,22 @@ jobs:
         run: npm run build
 
       - name: Configure AWS credentials
+        if: ${{ secrets.NEXT_PUBLIC_KAKAO_CLIENT_ID != '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::022232268286:role/github-actions-frontend-role
           aws-region: ap-northeast-2
 
       - name: Upload to S3
+        if: ${{ secrets.NEXT_PUBLIC_KAKAO_CLIENT_ID != '' }}
         run: |
           aws s3 sync out/ s3://urr-dev-frontend --delete --exclude "index.html" --exclude "404.html"
           aws s3 cp out/index.html s3://urr-dev-frontend/index.html --cache-control "no-cache, no-store, must-revalidate"
           aws s3 cp out/404.html s3://urr-dev-frontend/404.html --cache-control "no-cache, no-store, must-revalidate"
 
       - name: Invalidate CloudFront
+        if: ${{ secrets.NEXT_PUBLIC_KAKAO_CLIENT_ID != '' }}
         run: |
           aws cloudfront create-invalidation \
             --distribution-id E1SRBN3FALYH49 \
             --paths "/*"
-
-      # Discord 알림 (배포 성공)
-      - name: Discord notification (success)
-        if: success()
-        run: |
-          MSG=$(echo '${{ github.event.head_commit.message }}' | head -1 | sed 's/"/\\"/g')
-          BODY='{"embeds": [{"title": "🚀 프론트 배포 완료", "description": "**urr-frontend** → main\n📝 '"$MSG"'\n👤 ${{ github.actor }}\n🔗 [커밋](${{ github.event.head_commit.url }})\nhttps://urr.guru", "color": 65280}]}'
-          curl -H "Content-Type: application/json" -d "$BODY" ${{ secrets.DISCORD_WEBHOOK_URL }}
-          curl -H "Content-Type: application/json" -d "$BODY" ${{ secrets.DISCORD_WEBHOOK_URL_2 }}
-
-      # Discord 알림 (배포 실패)
-      - name: Discord notification (failure)
-        if: failure()
-        run: |
-          curl -H "Content-Type: application/json" \
-            -d '{"embeds": [{"title": "❌ 프론트 배포 실패", "description": "**urr-frontend**\n[로그 확인](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})", "color": 16711680}]}' \
-            ${{ secrets.DISCORD_WEBHOOK_URL }}
-          curl -H "Content-Type: application/json" \
-            -d '{"embeds": [{"title": "❌ 프론트 배포 실패", "description": "**urr-frontend**\n[로그 확인](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})", "color": 16711680}]}' \
-            ${{ secrets.DISCORD_WEBHOOK_URL_2 }}

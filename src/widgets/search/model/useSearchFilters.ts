@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import type { Artist } from "@/shared/types";
-import type { SearchableEvent } from "@/shared/lib/mocks/search";
+import type { Event } from "@/shared/types";
+
+export type SearchableEvent = Event & { artistName: string };
 
 function matchesQuery(text: string, q: string) {
   return text.toLowerCase().includes(q.toLowerCase());

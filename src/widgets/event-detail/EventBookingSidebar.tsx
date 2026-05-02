@@ -10,7 +10,7 @@ import { TierBadge } from "@/entities/user";
 import { PriceDisplay } from "@/shared/ui";
 import { BookingProvider, useBooking } from "@/features/booking/model/BookingContext";
 import { BookingModal } from "@/widgets/booking/BookingModal";
-import type { EventDetail } from "@/shared/lib/mocks/event-detail";
+import type { EventDetail } from "@/features/event";
 
 interface EventBookingSidebarProps {
   event: EventDetail;

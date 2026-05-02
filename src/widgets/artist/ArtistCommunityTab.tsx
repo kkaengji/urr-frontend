@@ -1,7 +1,7 @@
 import { MessageCircle } from "lucide-react";
 import { EmptyState } from "@/shared/ui";
 import { PostCard } from "@/entities/community";
-import { getArtistGradient } from "@/shared/lib/mocks/home";
+import { getArtistGradient } from "@/shared/lib/artistGradients";
 import type { CommunityPost } from "@/shared/types";
 
 interface ArtistCommunityTabProps {

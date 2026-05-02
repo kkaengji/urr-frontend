@@ -1,6 +1,14 @@
 import { delay } from "@/shared/lib/mockDelay";
-import { mockArtists } from "@/shared/lib/mocks/artists";
+import { findMockArtist, toArtistDetail } from "@/shared/lib/mocks/artists";
 import type { ArtistCategory } from "./getArtists";
+
+export interface ArtistExtendedInfo {
+  artistId: string;
+  debutDate: string;
+  agency: string;
+  genres: string[];
+  memberCount?: number;
+}
 
 export interface ArtistDetail {
   id: number;
@@ -19,30 +27,9 @@ export async function getArtist(
   _userId?: number,
 ): Promise<ArtistDetail> {
   await delay(300);
-  const artist = mockArtists.find((a) => String(a.id) === String(artistId));
+  const artist = findMockArtist(artistId);
   if (!artist) {
-    const fallback = mockArtists[0];
-    return {
-      id: Number(artistId),
-      name: fallback.name,
-      profileImageUrl: fallback.avatar,
-      description: fallback.bio ?? "",
-      isFollowing: false,
-      followerCount: fallback.followerCount,
-      bio: fallback.bio,
-      bannerImageUrl: fallback.banner,
-      category: fallback.category as ArtistCategory,
-    };
+    return { id: Number(artistId), name: "", profileImageUrl: "", description: "", isFollowing: false };
   }
-  return {
-    id: Number(artist.id),
-    name: artist.name,
-    profileImageUrl: artist.avatar,
-    description: artist.bio ?? "",
-    isFollowing: true,
-    followerCount: artist.followerCount,
-    bio: artist.bio,
-    bannerImageUrl: artist.banner,
-    category: artist.category as ArtistCategory,
-  };
+  return toArtistDetail(artist);
 }

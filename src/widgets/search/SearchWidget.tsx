@@ -14,12 +14,14 @@ import {
   ListFilter,
   Loader2,
 } from "lucide-react";
-import { getArtistGradient } from "@/shared/lib/mocks/home";
+import { getArtistGradient } from "@/shared/lib/artistGradients";
 import { getArtists } from "@/features/artist/api/getArtists";
 import { getEvents } from "@/features/event/api/getEvents";
 import { BookingStatusBadge } from "@/entities/event";
 import type { Artist, BookingStatus } from "@/shared/types";
-import type { SearchableEvent } from "@/shared/lib/mocks/search";
+import type { Event } from "@/shared/types";
+
+type SearchableEvent = Event & { artistName: string };
 import type { ArtistSummary } from "@/features/artist/api/getArtists";
 import type { EventSummary } from "@/features/event/api/getEvents";
 import { TrendingSection } from "./TrendingSection";

@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, Calendar, MapPin } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { formatDateFull } from "@/shared/lib/format";
 import { BOOKING_STATUS_LABELS } from "@/entities/event";
-import { getArtistGradient } from "@/shared/lib/mocks/home";
+import { getArtistGradient } from "@/shared/lib/artistGradients";
 import type { BannerEvent } from "@/entities/event";
 
 interface HeroBannerCarouselProps {

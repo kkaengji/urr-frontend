@@ -35,12 +35,12 @@ export interface ArtistSummary {
 export async function getArtists(): Promise<ArtistSummary[]> {
   await delay(400);
   return mockArtists.map((a) => ({
-    id: Number(a.id),
+    id: a.id,
     name: a.name,
-    profileImageUrl: a.avatar,
+    profileImageUrl: a.profileImageUrl,
     followerCount: a.followerCount,
     bio: a.bio,
-    bannerImageUrl: a.banner,
-    category: a.category as ArtistCategory,
+    bannerImageUrl: a.bannerImageUrl,
+    category: a.category,
   }));
 }
