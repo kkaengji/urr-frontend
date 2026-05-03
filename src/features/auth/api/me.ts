@@ -1,6 +1,7 @@
 import { tokenStore } from "@/shared/api/tokenStore";
 import { delay } from "@/shared/lib/mockDelay";
 import type { AuthUser } from "../model/types";
+import { mockUser } from "@/shared/lib/mocks/user";
 
 const mockAuthUser: AuthUser = {
   userId: 1,
@@ -13,12 +14,12 @@ const mockAuthUser: AuthUser = {
   marketingConsent: true,
   pushConsent: true,
   smsConsent: false,
-  memberships: [
-    { artistId: 1, artistName: "G-Dragon", tier: "LIGHTNING", endDate: "2026-12-31" },
-    { artistId: 2, artistName: "BTS", tier: "THUNDER", endDate: "2026-06-30" },
-    { artistId: 3, artistName: "aespa", tier: "CLOUD", endDate: "2026-09-15" },
-    { artistId: 4, artistName: "IVE", tier: "MIST", endDate: "2026-08-10" },
-  ],
+  memberships: mockUser.memberships.map((m) => ({
+    artistId: Number(m.artistId),
+    artistName: m.artistName,
+    tier: m.tier,
+    endDate: m.expiresAt.slice(0, 10),
+  })),
 };
 
 export async function fetchMe(): Promise<AuthUser> {

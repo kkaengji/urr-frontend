@@ -5,6 +5,7 @@ import type {
   TierLevel,
   Event,
 } from "@/shared/types";
+import { findMockEvent } from "@/shared/lib/mocks/events";
 
 export type EnrichedTransfer = TransferListing & { event: Event };
 
@@ -33,11 +34,11 @@ interface MockTransferPost {
 }
 
 const mockPosts: MockTransferPost[] = [
-  { id: 1, artistId: 1, showId: 101, showName: "G-Dragon 2026 DOME TOUR", showDate: "2026-06-01T18:00:00+09:00", showVenue: "KSPO DOME", section: "R", zone: "R3", rowInfo: "5", seatNumber: "12", faceValue: 110000, sellingPrice: 140000, sellerTier: "LIGHTNING", sellerTradeCount: 8, feeAmount: 7000, sellerExpectedAmount: 133000, status: "listed", sellerUserId: 101, createdAt: "2026-04-15T10:00:00+09:00" },
-  { id: 2, artistId: 1, showId: 101, showName: "G-Dragon 2026 DOME TOUR", showDate: "2026-06-01T18:00:00+09:00", showVenue: "KSPO DOME", section: "S", zone: "S2", rowInfo: "11", seatNumber: "7", faceValue: 132000, sellingPrice: 160000, sellerTier: "THUNDER", sellerTradeCount: 3, feeAmount: 8000, sellerExpectedAmount: 152000, status: "listed", sellerUserId: 102, createdAt: "2026-04-16T14:30:00+09:00" },
-  { id: 3, artistId: 1, showId: 101, showName: "G-Dragon 2026 DOME TOUR", showDate: "2026-06-01T18:00:00+09:00", showVenue: "KSPO DOME", section: "A", zone: "A5", rowInfo: "3", seatNumber: "20", faceValue: 99000, sellingPrice: 110000, sellerTier: "CLOUD", sellerTradeCount: 1, feeAmount: 11000, sellerExpectedAmount: 99000, status: "listed", sellerUserId: 103, createdAt: "2026-04-17T09:00:00+09:00" },
-  { id: 4, artistId: 2, showId: 201, showName: "BTS YET TO COME ENCORE IN SEOUL", showDate: "2026-08-01T19:00:00+09:00", showVenue: "잠실종합운동장 주경기장", section: "VIP", zone: "VIP1", rowInfo: "2", seatNumber: "8", faceValue: 220000, sellingPrice: 280000, sellerTier: "LIGHTNING", sellerTradeCount: 12, feeAmount: 14000, sellerExpectedAmount: 266000, status: "listed", sellerUserId: 104, createdAt: "2026-04-18T11:00:00+09:00" },
-  { id: 5, artistId: 2, showId: 201, showName: "BTS YET TO COME ENCORE IN SEOUL", showDate: "2026-08-01T19:00:00+09:00", showVenue: "잠실종합운동장 주경기장", section: "R", zone: "R5", rowInfo: "18", seatNumber: "33", faceValue: 143000, sellingPrice: 165000, sellerTier: "THUNDER", sellerTradeCount: 5, feeAmount: 8250, sellerExpectedAmount: 156750, status: "listed", sellerUserId: 105, createdAt: "2026-04-19T08:30:00+09:00" },
+  { id: 1, artistId: 1, showId: 1, showName: "2026 IU CONCERT 〈The Golden Hour〉", showDate: "2026-10-11T18:00:00+09:00", showVenue: "KSPO DOME (올림픽체조경기장)", section: "R", zone: "R3", rowInfo: "5", seatNumber: "12", faceValue: 110000, sellingPrice: 140000, sellerTier: "LIGHTNING", sellerTradeCount: 8, feeAmount: 7000, sellerExpectedAmount: 133000, status: "listed", sellerUserId: 101, createdAt: "2026-04-15T10:00:00+09:00" },
+  { id: 2, artistId: 1, showId: 1, showName: "2026 IU CONCERT 〈The Golden Hour〉", showDate: "2026-10-11T18:00:00+09:00", showVenue: "KSPO DOME (올림픽체조경기장)", section: "S", zone: "S2", rowInfo: "11", seatNumber: "7", faceValue: 132000, sellingPrice: 160000, sellerTier: "THUNDER", sellerTradeCount: 3, feeAmount: 8000, sellerExpectedAmount: 152000, status: "listed", sellerUserId: 102, createdAt: "2026-04-16T14:30:00+09:00" },
+  { id: 3, artistId: 1, showId: 1, showName: "2026 IU CONCERT 〈The Golden Hour〉", showDate: "2026-10-11T18:00:00+09:00", showVenue: "KSPO DOME (올림픽체조경기장)", section: "A", zone: "A5", rowInfo: "3", seatNumber: "20", faceValue: 99000, sellingPrice: 110000, sellerTier: "CLOUD", sellerTradeCount: 1, feeAmount: 11000, sellerExpectedAmount: 99000, status: "listed", sellerUserId: 103, createdAt: "2026-04-17T09:00:00+09:00" },
+  { id: 4, artistId: 2, showId: 2, showName: "BTS WORLD TOUR 'ARIRANG' IN BUSAN", showDate: "2026-06-12T19:00:00+09:00", showVenue: "부산아시아드 주경기장", section: "VIP", zone: "VIP1", rowInfo: "2", seatNumber: "8", faceValue: 220000, sellingPrice: 280000, sellerTier: "LIGHTNING", sellerTradeCount: 12, feeAmount: 14000, sellerExpectedAmount: 266000, status: "listed", sellerUserId: 104, createdAt: "2026-04-18T11:00:00+09:00" },
+  { id: 5, artistId: 2, showId: 2, showName: "BTS WORLD TOUR 'ARIRANG' IN BUSAN", showDate: "2026-06-12T19:00:00+09:00", showVenue: "부산아시아드 주경기장", section: "R", zone: "R5", rowInfo: "18", seatNumber: "33", faceValue: 143000, sellingPrice: 165000, sellerTier: "THUNDER", sellerTradeCount: 5, feeAmount: 8250, sellerExpectedAmount: 156750, status: "listed", sellerUserId: 105, createdAt: "2026-04-19T08:30:00+09:00" },
 ];
 
 // ── Type helpers ─────────────────────────────────────────
@@ -73,15 +74,18 @@ function mapPost(item: MockTransferPost): EnrichedTransfer {
     seatInfo: seatParts,
     status: toTransferStatus(item.status),
     createdAt: item.createdAt,
-    event: {
-      id: String(item.showId),
-      artistId: String(item.artistId),
-      title: item.showName,
-      venue: item.showVenue,
-      dates: [{ id: String(item.showId), date: item.showDate, bookingWindows: [], totalSeats: 0, remainingSeats: 0 }],
-      poster: "",
-      status: "open",
-    },
+    event: (() => {
+      const e = findMockEvent(item.showId);
+      return {
+        id: String(item.showId),
+        artistId: String(item.artistId),
+        title: e?.title ?? item.showName,
+        venue: e?.venueName ?? item.showVenue,
+        dates: [{ id: String(item.showId), date: item.showDate, bookingWindows: [], totalSeats: 0, remainingSeats: 0 }],
+        poster: e?.posterImageUrl ?? "",
+        status: "open" as const,
+      };
+    })(),
   };
 }
 
