@@ -1,103 +1,56 @@
-# Portfolio Mode 전환 — 작업 체크리스트
+# 이벤트 유형별 예매 플로우 분기 — 구현 체크리스트
 
-> API 연동 제거 → mock 데이터 기반 포폴 데모 전환
-> TanStack Query 구조 유지, 게스트 로그인 버튼 추가
+## 개요
 
----
+공연 유형에 따라 예매 플로우를 3가지로 분기한다.
 
-## Step 1. Mock 유틸 생성
-- [x] `src/shared/lib/mockDelay.ts` — `delay()` 함수 생성
-
----
-
-## Step 2. Auth 레이어 단순화
-- [x] `src/features/auth/api/me.ts` — token 없으면 throw, 있으면 mockAuthUser 반환
-- [x] `src/features/auth/api/login.ts` — mock AuthResponseData 반환
-- [x] `src/features/auth/api/reissue.ts` — null 반환
-- [x] `src/features/auth/ui/AuthInitializer.tsx` — reissueToken 제거, 즉시 ready
-- [x] `src/features/auth/onboarding/ui/AuthStep.tsx` — onGuestLogin prop + 버튼 추가
-- [x] `src/widgets/auth/OnboardingWidget.tsx` — guest handler 추가, reissueToken 제거
-- [x] `src/widgets/layout/LayoutShell.tsx` — isError redirect /landing → /onboarding
+| 플로우 타입 | 대상 카테고리 | 흐름 |
+|------------|-------------|------|
+| 좌석 선택형 (`seat-map`) | concert, fanmeeting, domestic | 현행 유지 (구역 → 개별 좌석 선택) |
+| 구역 선택형 (`zone`) | festival | 구역 카드 → 수량 선택 (배치도 없음) |
+| 회차 선택형 (`performance`) | musical, etc | 회차 달력 → 등급 선택 → 결제 |
 
 ---
 
-## Step 3. Home API Mock
-- [x] `src/features/home/api/getHome.ts`
+## Phase 1 — 공통 유틸
+
+- [ ] `BookingFlowType` 타입 추가 (`src/shared/types/index.ts`)
+- [ ] `getBookingFlowType(category)` 유틸 신규 작성 (`src/features/booking/model/bookingFlowUtils.ts`)
+- [ ] `BookingContext`에 `flowType` 노출 (`src/features/booking/model/BookingContext.tsx`)
 
 ---
 
-## Step 4. Artist API Mock
-- [x] `src/features/artist/api/getArtists.ts`
-- [x] `src/features/artist/api/getArtist.ts`
-- [x] `src/features/artist/api/followArtist.ts`
-- [x] `src/features/artist/api/unfollowArtist.ts`
+## Phase 2 — 페스티벌 구역 선택형
+
+- [ ] `ZoneCard.tsx` 컴포넌트 작성 (`src/widgets/booking/`)
+- [ ] `ZoneSelectView.tsx` 컴포넌트 작성 (`src/widgets/booking/`)
+- [ ] `RightMain.tsx` — `zone` 분기 추가
+- [ ] `useBookingStore` — zone 선택 후 `seats-individual` 스킵, `payment` 직행 전이
+- [ ] PEAK FESTIVAL (event 8) mock 데이터에 zone 구조 추가 (`src/features/event/api/getEventDetail.ts`)
 
 ---
 
-## Step 5. Event API Mock
-- [x] `src/features/event/api/getEvents.ts`
-- [x] `src/features/event/api/getEventDetail.ts`
-- [x] `src/features/event/api/getArtistEvents.ts`
+## Phase 3 — 뮤지컬/전시 회차 선택형
+
+- [ ] `PerformanceScheduleView.tsx` 작성 (`src/widgets/booking/`)
+- [ ] `GradePicker.tsx` 작성 (`src/widgets/booking/`)
+- [ ] `RightMain.tsx` — `performance` 분기 추가
+- [ ] `LeftPanel.tsx` — musical/etc일 때 날짜 선택기 조건부 숨김
+- [ ] 킹키부츠(event 4), 김종욱찾기(event 6), 아라리오뮤지엄(event 7) mock에 회차·등급 구조 추가
 
 ---
 
-## Step 6. Show API Mock
-- [x] `src/features/show/api/getShows.ts`
-- [x] `src/features/show/api/getShowDetail.ts`
-- [x] `src/features/show/api/getSections.ts`
-- [x] `src/features/show/api/getShowSeats.ts`
+## Phase 4 — 결제 플로우 변형
+
+- [ ] `PaymentView.tsx` — `performance` 타입에 수령 방법 선택 추가 (모바일티켓 / 현장수령)
+- [ ] `ConfirmationView.tsx` — 수령 방법 표시 분기
 
 ---
 
-## Step 7. Booking API Mock
-- [x] `src/features/booking/api/queue.ts` — 카운트다운 시뮬레이션
-- [x] `src/features/booking/api/getBookingWindows.ts`
-- [x] `src/features/booking/api/getSeatsSummary.ts`
-- [x] `src/features/booking/api/getSeatsAvailability.ts`
-- [x] `src/features/booking/api/bookTicket.ts`
-- [x] `src/features/booking/api/confirmReservation.ts`
-- [x] `src/features/booking/api/cancelReservation.ts`
-- [x] `src/features/booking/api/releaseReservation.ts`
+## Phase 5 — 검증
 
----
-
-## Step 8. Membership API Mock
-- [x] `src/features/membership/api/getMemberships.ts`
-- [x] `src/features/membership/api/getMembershipPolicies.ts`
-- [x] `src/features/membership/api/getPresalePolicy.ts`
-- [x] `src/features/membership/api/subscribeMembership.ts`
-- [x] `src/features/membership/api/cancelMembership.ts`
-- [x] `src/features/membership/api/updateNickname.ts`
-
----
-
-## Step 9. Payment API Mock
-- [x] `src/features/payment/api/confirmPayment.ts`
-- [x] `src/features/payment/api/createPaymentRecord.ts`
-
----
-
-## Step 10. Transfer API Mock
-- [x] `src/features/transfer/api/getTransferPosts.ts`
-- [x] `src/features/transfer/api/getMyTransfers.ts`
-
----
-
-## Step 11. Reservation API Mock
-- [x] `src/features/reservation/api/getMyReservations.ts`
-
----
-
-## Step 12. 빌드 검증
-- [x] `npm run build` — 타입 오류 0개, 63페이지 빌드 성공
-
----
-
-## Step 13. 동작 확인
-- [ ] `/onboarding` → 게스트 버튼 → 홈 이동
-- [ ] 홈 페이지 데이터 로딩
-- [ ] 아티스트 상세 → 공연 탭
-- [ ] 예매 플로우: 대기열(~10s) → 좌석 선택 → 결제 → 완료
-- [ ] 멤버십 페이지 구독/해지
-- [ ] 마이페이지 티켓 월렛, 양도 내역
-- [ ] 새로고침 후 로그인 상태 유지
+- [ ] concert 플로우: event 1 (Weverse Con) 예매 전체 흐름 확인
+- [ ] festival 플로우: event 8 (PEAK FESTIVAL) 예매 전체 흐름 확인
+- [ ] musical 플로우: event 4 (킹키부츠) 예매 전체 흐름 확인
+- [ ] etc 플로우: event 7 (아라리오뮤지엄) 예매 전체 흐름 확인
+- [ ] `npm run build` 오류 없음 확인

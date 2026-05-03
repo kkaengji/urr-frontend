@@ -16,6 +16,12 @@ import type { BannerEvent } from "@/entities/event";
 import { HeroBannerCarousel } from "./HeroBannerCarousel";
 import { HomePageSkeleton } from "./HomePageSkeleton";
 
+function isExpiredDate(value: unknown): boolean {
+  const date = parseApiDate(value);
+  if (isNaN(date.getTime())) return false;
+  return date < new Date();
+}
+
 function formatDateRange(openDate: unknown, endDate: unknown): string {
   const open = parseApiDate(openDate);
   if (isNaN(open.getTime())) return "";
@@ -253,40 +259,56 @@ export function HomeWidget() {
             linkLabel="공연 더보기"
           />
           <div className="grid grid-cols-3 gap-4">
-            {presaleOpeningSoon.map((event) => (
-              <Link
-                key={event.eventId}
-                href={`/events/${event.eventId}`}
-                className="group flex gap-3 p-3 rounded-lg border border-border hover:bg-[#F3F2F0] transition-colors bg-card"
-              >
-                {event.posterImageUrl ? (
-                  <div className="relative w-20 h-25 rounded-md shrink-0 overflow-hidden">
-                    <Image
-                      src={event.posterImageUrl}
-                      alt={event.eventTitle}
-                      fill
-                      className="object-cover"
-                    />
+            {presaleOpeningSoon.map((event) => {
+              const expired = isExpiredDate(event.openDate);
+              return (
+                <Link
+                  key={event.eventId}
+                  href={`/events/${event.eventId}`}
+                  className={`group flex gap-3 p-3 rounded-lg border transition-colors ${
+                    expired
+                      ? "border-border bg-card opacity-60 pointer-events-none"
+                      : "border-border hover:bg-[#F3F2F0] bg-card"
+                  }`}
+                >
+                  <div className="relative shrink-0">
+                    {event.posterImageUrl ? (
+                      <div className="relative w-20 h-25 rounded-md overflow-hidden">
+                        <Image
+                          src={event.posterImageUrl}
+                          alt={event.eventTitle}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className="w-20 h-25 rounded-md flex items-center justify-center text-white text-xs font-medium"
+                        style={{ background: getArtistGradient(String(event.artistId)) }}
+                      >
+                        {event.eventTitle.split(" ")[0]}
+                      </div>
+                    )}
+                    {expired && (
+                      <span className="absolute inset-0 flex items-center justify-center rounded-md bg-black/40 text-white text-xs font-bold">
+                        마감
+                      </span>
+                    )}
                   </div>
-                ) : (
-                  <div
-                    className="w-20 h-25 rounded-md shrink-0 flex items-center justify-center text-white text-xs font-medium"
-                    style={{ background: getArtistGradient(String(event.artistId)) }}
-                  >
-                    {event.eventTitle.split(" ")[0]}
+                  <div className="flex-1 min-w-0 flex flex-col py-0.5">
+                    <p className={`text-xs font-semibold ${expired ? "text-muted-foreground" : "text-foreground"}`}>
+                      {formatEventDate(event.openDate, true)}
+                    </p>
+                    <p className="text-sm font-semibold line-clamp-2 leading-tight mt-0.5 group-hover:text-primary transition-colors">
+                      {event.eventTitle}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {expired ? "선예매 마감" : "선예매"}
+                    </p>
                   </div>
-                )}
-                <div className="flex-1 min-w-0 flex flex-col py-0.5">
-                  <p className="text-xs font-semibold text-foreground">
-                    {formatEventDate(event.openDate, true)}
-                  </p>
-                  <p className="text-sm font-semibold line-clamp-2 leading-tight mt-0.5 group-hover:text-primary transition-colors">
-                    {event.eventTitle}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">선예매</p>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}
