@@ -6,13 +6,14 @@ import { usePathname } from "next/navigation";
 import { Search, Bell, ChevronRight } from "lucide-react";
 import { Button } from "@/shared/ui";
 import { useNotifications } from "@/features/notification";
+import { useArtists } from "@/features/artist";
 
 interface BreadcrumbItem {
   label: string;
   href: string;
 }
 
-function useBreadcrumbs(): BreadcrumbItem[] {
+function useBreadcrumbs(artistNameMap: Map<string, string>): BreadcrumbItem[] {
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
 
@@ -29,7 +30,7 @@ function useBreadcrumbs(): BreadcrumbItem[] {
     crumbs.push({ label: "아티스트", href: "/artists" });
     if (segments[1]) {
       crumbs.push({
-        label: segments[1],
+        label: artistNameMap.get(segments[1]) ?? segments[1],
         href: `/artists/${segments[1]}`,
       });
       if (segments[2] === "community") {
@@ -67,7 +68,9 @@ function useBreadcrumbs(): BreadcrumbItem[] {
 }
 
 export function TopBar() {
-  const crumbs = useBreadcrumbs();
+  const { data: artists = [] } = useArtists();
+  const artistNameMap = new Map(artists.map((a) => [a.id, a.name]));
+  const crumbs = useBreadcrumbs(artistNameMap);
   const { unreadCount } = useNotifications();
 
   return (

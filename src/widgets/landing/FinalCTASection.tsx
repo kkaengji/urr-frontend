@@ -121,7 +121,7 @@ export function FinalCTASection() {
 
           {/* Naver ghost */}
           <Link
-            href="/onboarding"
+            href="#features"
             className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-[0.84rem] font-light transition-all duration-300 hover:-translate-y-0.5"
             style={{
               color: "#94a3b8",

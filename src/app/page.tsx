@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/features/auth/model/useCurrentUser";
-import { HomeWidget } from "@/widgets/home";
+import { HomeWidget, HomePageSkeleton } from "@/widgets/home";
 
 export default function Home() {
   const router = useRouter();
@@ -15,6 +15,7 @@ export default function Home() {
     }
   }, [user, isLoading, router]);
 
-  if (isLoading || !user) return null;
+  if (isLoading) return <HomePageSkeleton />;
+  if (!user) return null;
   return <HomeWidget />;
 }

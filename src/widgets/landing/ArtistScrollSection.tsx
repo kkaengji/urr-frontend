@@ -4,10 +4,14 @@ import { useRef } from "react";
 import Image from "next/image";
 import { useArtists } from "@/features/artist/model/useArtists";
 
+const SKELETON_COUNT = 8;
+
 export function ArtistScrollSection() {
   const trackRef = useRef<HTMLDivElement>(null);
-  const { data: artists = [] } = useArtists();
+  const { data: artists = [], isLoading } = useArtists();
   const doubled = [...artists, ...artists];
+
+  if (!isLoading && artists.length === 0) return null;
 
   return (
     <section
@@ -79,6 +83,22 @@ export function ArtistScrollSection() {
           WebkitMaskImage: "linear-gradient(90deg, transparent, black 4%, black 96%, transparent)",
         }}
       >
+        {isLoading ? (
+          <div className="flex gap-4" style={{ paddingLeft: "24px" }}>
+            {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+              <div
+                key={i}
+                className="shrink-0 rounded-2xl animate-pulse"
+                style={{
+                  width: "200px",
+                  height: "220px",
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,94,50,0.10)",
+                }}
+              />
+            ))}
+          </div>
+        ) : (
         <div
           ref={trackRef}
           className="flex gap-4"
@@ -153,6 +173,7 @@ export function ArtistScrollSection() {
             </div>
           ))}
         </div>
+        )}
       </div>
     </section>
   );

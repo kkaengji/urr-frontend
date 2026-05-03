@@ -12,9 +12,22 @@ import type { ShowSummary } from "@/features/show";
 import type { PresalePolicy } from "@/features/membership";
 import type { TierLevel, TierWindow } from "@/shared/types";
 import type { EventDetail } from "@/features/event";
+import type { BookingStatus } from "@/shared/types";
 import { EventDetailHero } from "./EventDetailHero";
 import { EventDetailTabs } from "./EventDetailTabs";
 import { EventBookingSidebar } from "./EventBookingSidebar";
+
+function deriveEventStatus(shows: ShowSummary[]): BookingStatus {
+  if (shows.length === 0) return "upcoming";
+  const now = new Date();
+  const allExpired = shows.every((s) => new Date(s.saleCloseAt) < now);
+  if (allExpired) return "closed";
+  const hasActiveSale = shows.some(
+    (s) => new Date(s.saleOpenAt) <= now && new Date(s.saleCloseAt) > now,
+  );
+  if (hasActiveSale) return "open";
+  return "upcoming";
+}
 
 function mapPresalePolicyToWindows(policy: PresalePolicy | undefined): TierWindow[] {
   if (!policy) return [];
@@ -29,6 +42,7 @@ function mapToEventDetail(
   event: EventDetailResponse,
   shows: ShowSummary[],
   presalePolicies: (PresalePolicy | undefined)[],
+  eventStatus: BookingStatus,
 ): EventDetail {
   const dates = shows.map((show, i) => ({
     id: String(show.showId),
@@ -59,7 +73,7 @@ function mapToEventDetail(
     dates,
     poster: event.posterImageUrl,
     detailInfoImage: event.detailInfoImageUrl,
-    status: event.active ? "open" : "closed",
+    status: eventStatus,
     category: event.category,
     tags: event.tags,
     runtime: event.runtime,
@@ -152,7 +166,8 @@ export function EventDetailWidget({ eventId }: EventDetailWidgetProps) {
   }
 
   const presalePolicies = presalePolicyResults.map((r) => r.data);
-  const event = mapToEventDetail(eventData, shows, presalePolicies);
+  const eventStatus = deriveEventStatus(shows);
+  const event = mapToEventDetail(eventData, shows, presalePolicies, eventStatus);
 
   return (
     <div className="space-y-6">

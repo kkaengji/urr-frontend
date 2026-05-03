@@ -102,7 +102,7 @@ export function EventsSection({
 
           {upcomingEvents.length > 1 && (
             <div className="rounded-lg border border-border overflow-hidden">
-              {upcomingEvents.slice(1, 4).map((event, idx) => {
+              {upcomingEvents.slice(1).map((event, idx) => {
                 const evDate = event.dates[0]?.date ?? "";
                 const evDateStr = evDate ? formatDateShort(evDate) : "";
                 return (

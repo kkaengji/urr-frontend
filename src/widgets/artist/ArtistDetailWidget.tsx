@@ -10,6 +10,7 @@ import { useCurrentUser } from "@/features/auth/model/useCurrentUser";
 import { getArtistEvents } from "@/features/event";
 import type { EventSummary } from "@/features/event";
 import { findMockArtist } from "@/shared/lib/mocks/artists";
+import { getMockCommunityPosts } from "@/shared/lib/mocks/community";
 import type { ArtistExtendedInfo } from "@/features/artist";
 import { getTransferPosts } from "@/features/transfer";
 import type { Artist, Event, TierLevel } from "@/shared/types";
@@ -157,7 +158,7 @@ export function ArtistDetailWidget({ artistId }: ArtistDetailWidgetProps) {
   const upcoming = allEvents.filter((e) => e.status === "open");
   const past = allEvents.filter((e) => e.status !== "open");
   const nextEvent = upcoming[0];
-  const communityPosts: import("@/shared/types").CommunityPost[] = [];
+  const communityPosts = getMockCommunityPosts(artistId);
 
   const eventPosterByTitle = new Map(allEvents.map((e) => [e.title, e.poster]));
   const enrichedTransferListings = transferListings.map((l) => ({

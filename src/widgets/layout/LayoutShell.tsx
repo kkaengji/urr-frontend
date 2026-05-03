@@ -30,7 +30,7 @@ function OnboardingGuard({ children }: { children: ReactNode }) {
     if (isError) {
       tokenStore.clearToken();
       queryClient.clear();
-      router.replace("/onboarding");
+      router.replace("/landing");
     }
   }, [user, isLoading, isError, router, queryClient]);
 

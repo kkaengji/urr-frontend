@@ -14,6 +14,7 @@ import { parseApiDate, formatEventDate } from "@/shared/lib/utils";
 import type { Artist } from "@/shared/types";
 import type { BannerEvent } from "@/entities/event";
 import { HeroBannerCarousel } from "./HeroBannerCarousel";
+import { TrendingEventsCarousel } from "./TrendingEventsCarousel";
 import { HomePageSkeleton } from "./HomePageSkeleton";
 
 function isExpiredDate(value: unknown): boolean {
@@ -21,6 +22,7 @@ function isExpiredDate(value: unknown): boolean {
   if (isNaN(date.getTime())) return false;
   return date < new Date();
 }
+
 
 function formatDateRange(openDate: unknown, endDate: unknown): string {
   const open = parseApiDate(openDate);
@@ -100,11 +102,13 @@ export function HomeWidget() {
 
   const trendingEvents = withPoster(dedupById(homeData.trendingEvents));
   const popularEventRanking = withPoster(dedupById(homeData.popularEventRanking));
-  const presaleOpeningSoon = dedupById(homeData.presaleOpeningSoon).map((e) => ({
-    ...e,
-    posterImageUrl: eventMap.get(e.eventId)?.posterImageUrl ?? null,
-    openDate: e.saleOpenAt,
-  }));
+  const presaleOpeningSoon = dedupById(homeData.presaleOpeningSoon)
+    .map((e) => ({
+      ...e,
+      posterImageUrl: eventMap.get(e.eventId)?.posterImageUrl ?? null,
+      openDate: e.saleOpenAt,
+    }))
+    .filter((e) => !isExpiredDate(e.openDate));
 
   const banners: BannerEvent[] = trendingEvents.slice(0, 4).map((e) => {
     const artist = artists.find((a) => a.id === String(e.artistId));
@@ -158,52 +162,7 @@ export function HomeWidget() {
       </section>
 
       {/* ===== 3. 지금 뜨는 공연 ===== */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-bold">지금 뜨는 공연</h2>
-        <div className="grid grid-cols-6 gap-3">
-          {trendingEvents.map((event, index) => (
-            <Link
-              key={event.eventId}
-              href={`/events/${event.eventId}`}
-              className="group min-w-0"
-            >
-              <div className="relative w-full aspect-4/5 rounded-lg overflow-hidden">
-                {event.posterImageUrl ? (
-                  <Image
-                    src={event.posterImageUrl}
-                    alt={event.eventTitle}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div
-                    className="absolute inset-0"
-                    style={{ background: getArtistGradient(String(event.artistId)) }}
-                  />
-                )}
-                <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
-                <span
-                  className="absolute bottom-2 left-3 text-4xl font-black text-white/90"
-                  style={{ textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}
-                >
-                  {index + 1}
-                </span>
-              </div>
-              <div className="mt-2.5 space-y-1.5">
-                <p className="text-sm font-semibold line-clamp-2 leading-tight group-hover:text-primary transition-colors">
-                  {event.eventTitle}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {event.venueAddress ?? ""}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {formatDateRange(event.openDate, event.endDate)}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      <TrendingEventsCarousel events={trendingEvents} />
 
       {/* ===== 4. 인기 공연 랭킹 ===== */}
       <section className="space-y-4">
@@ -260,16 +219,11 @@ export function HomeWidget() {
           />
           <div className="grid grid-cols-3 gap-4">
             {presaleOpeningSoon.map((event) => {
-              const expired = isExpiredDate(event.openDate);
               return (
                 <Link
                   key={event.eventId}
                   href={`/events/${event.eventId}`}
-                  className={`group flex gap-3 p-3 rounded-lg border transition-colors ${
-                    expired
-                      ? "border-border bg-card opacity-60 pointer-events-none"
-                      : "border-border hover:bg-[#F3F2F0] bg-card"
-                  }`}
+                  className="group flex gap-3 p-3 rounded-lg border border-border bg-card hover:bg-[#F3F2F0] transition-colors"
                 >
                   <div className="relative shrink-0">
                     {event.posterImageUrl ? (
@@ -289,22 +243,15 @@ export function HomeWidget() {
                         {event.eventTitle.split(" ")[0]}
                       </div>
                     )}
-                    {expired && (
-                      <span className="absolute inset-0 flex items-center justify-center rounded-md bg-black/40 text-white text-xs font-bold">
-                        마감
-                      </span>
-                    )}
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col py-0.5">
-                    <p className={`text-xs font-semibold ${expired ? "text-muted-foreground" : "text-foreground"}`}>
+                    <p className="text-xs font-semibold text-muted-foreground">
                       {formatEventDate(event.openDate, true)}
                     </p>
                     <p className="text-sm font-semibold line-clamp-2 leading-tight mt-0.5 group-hover:text-primary transition-colors">
                       {event.eventTitle}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {expired ? "선예매 마감" : "선예매"}
-                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">선예매</p>
                   </div>
                 </Link>
               );

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Crown } from "lucide-react";
+import { ArrowLeft, Crown, Zap, CloudLightning, Cloud } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
@@ -148,6 +148,36 @@ export function MembershipIntroStep({
         </div>
         <p className="text-xs text-muted-foreground px-1">
           ※ 모든 티어는 동일한 티켓을 구매할 수 있으며, 예매 시작 시점만 차등 적용됩니다.
+        </p>
+      </div>
+
+      {/* Expected tier preview */}
+      <div className="rounded-xl border border-border bg-muted/20 p-5 space-y-3">
+        <p className="text-sm font-semibold">가입 후 예상 등급</p>
+        <div className="flex items-center gap-3">
+          {/* 기본: 클라우드 */}
+          <div className="flex-1 rounded-lg border border-border bg-background p-3 text-center space-y-1.5">
+            <Cloud size={20} className="mx-auto text-tier-cloud" />
+            <p className="text-xs font-medium">클라우드</p>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">가입 즉시<br />기본 부여</p>
+          </div>
+          <div className="flex flex-col items-center gap-1 text-muted-foreground">
+            <span className="text-xs">멜론</span>
+            <span className="text-lg leading-none">→</span>
+            <span className="text-xs">연동 시</span>
+          </div>
+          {/* 연동 후: 썬더 or 라이트닝 */}
+          <div className="flex-1 rounded-lg border border-border bg-background p-3 text-center space-y-1.5">
+            <div className="flex justify-center gap-1">
+              <CloudLightning size={20} className="text-tier-thunder" />
+              <Zap size={20} className="text-tier-lightning" />
+            </div>
+            <p className="text-xs font-medium">썬더 / 라이트닝</p>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">팬 신뢰 점수에<br />따라 자동 승급</p>
+          </div>
+        </div>
+        <p className="text-[11px] text-muted-foreground">
+          * 팬 신뢰 점수 66점 이상 → 썬더, 85점 이상 → 라이트닝. 연동은 가입 후 프로필 설정에서도 가능합니다.
         </p>
       </div>
 

@@ -45,7 +45,13 @@ function EventBookingSidebarInner({ event }: EventBookingSidebarProps) {
   const isBookable = event.status === "open";
   const isSoldOut = event.status === "soldout";
   const isClosed = event.status === "closed";
-  const isTestEvent = event.id === "1";
+
+  const now = new Date();
+  const hasAnyWindowOpened =
+    bookingWindows.length === 0
+      ? true
+      : bookingWindows.some((w) => new Date(w.opensAt) <= now);
+  const canBook = isBookable && hasAnyWindowOpened;
 
   const handleBookingClick = () => {
     startBooking();
@@ -142,18 +148,16 @@ function EventBookingSidebarInner({ event }: EventBookingSidebarProps) {
         {/* CTA Button */}
         <Button
           className="w-full h-12 text-base font-semibold"
-          disabled={!isBookable || !isTestEvent}
+          disabled={!canBook}
           onClick={handleBookingClick}
         >
-          {!isTestEvent
-            ? "준비중"
-            : isBookable
-              ? "예매하기"
-              : isSoldOut
-                ? "매진"
-                : event.status === "upcoming"
-                  ? "오픈 예정"
-                  : "판매 종료"}
+          {isSoldOut
+            ? "매진"
+            : isClosed
+              ? "판매 종료"
+              : canBook
+                ? "예매하기"
+                : "오픈 예정"}
         </Button>
 
         {/* Safety notice */}

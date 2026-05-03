@@ -20,11 +20,6 @@ const TIERS = [
     ],
     featured: false,
     badge: null,
-    btnStyle: {
-      border: "1px solid rgba(255,94,50,0.2)",
-      background: "rgba(255,94,50,0.06)",
-      color: "#e8edf3",
-    },
   },
   {
     emoji: "☁️",
@@ -44,19 +39,14 @@ const TIERS = [
     ],
     featured: false,
     badge: null,
-    btnStyle: {
-      border: "1px solid rgba(255,94,50,0.2)",
-      background: "rgba(255,94,50,0.06)",
-      color: "#e8edf3",
-    },
   },
   {
     emoji: "⚡",
     name: "썬더",
     englishName: "Thunder",
-    condition: "멜론 연동 + 꾸준한 팬 활동",
-    price: "₩30,000",
-    priceNote: "/ 년",
+    condition: "멜론 연동 + 팬 신뢰 점수 66점 이상",
+    price: "자동 승급",
+    priceNote: "(클라우드 ₩30,000/년 기반)",
     booking: "선예매 +1h",
     fee: "+₩3,000",
     transfer: "5% 수수료",
@@ -68,19 +58,14 @@ const TIERS = [
     ],
     featured: false,
     badge: null,
-    btnStyle: {
-      border: "1px solid rgba(255,94,50,0.2)",
-      background: "rgba(255,94,50,0.06)",
-      color: "#e8edf3",
-    },
   },
   {
     emoji: "🌩️",
     name: "라이트닝",
     englishName: "Lightning",
-    condition: "멜론 연동 + 상위 스트리밍 팬",
-    price: "₩30,000",
-    priceNote: "/ 년",
+    condition: "멜론 연동 + 팬 신뢰 점수 85점 이상",
+    price: "자동 승급",
+    priceNote: "(클라우드 ₩30,000/년 기반)",
     booking: "선예매 1순위",
     fee: "Free",
     transfer: "5% 수수료",
@@ -92,11 +77,6 @@ const TIERS = [
     ],
     featured: true,
     badge: "선예매 1순위",
-    btnStyle: {
-      background: "#FF5E32",
-      color: "white",
-      border: "none",
-    },
   },
 ];
 
@@ -153,7 +133,7 @@ export function MembershipTierSection() {
               lineHeight: 1.7,
             }}
           >
-            활동이 많을수록 더 높은 등급. 연간 ₩30,000으로 공정한 티켓팅을
+            팬 신뢰 점수가 높을수록 더 높은 등급. 연간 ₩30,000으로 공정한 티켓팅을
             시작하세요.
           </p>
         </div>
@@ -245,27 +225,41 @@ export function MembershipTierSection() {
 
               {/* Price */}
               <div className="mt-3 mb-1">
-                <span
-                  style={{
-                    fontFamily: "var(--font-sans)",
-                    fontSize: "2.2rem",
-                    fontWeight: 200,
-                    letterSpacing: "-0.03em",
-                    color: "#e8edf3",
-                  }}
-                >
-                  {tier.price}
-                </span>
-                {tier.priceNote && (
+                <div className="flex items-baseline gap-1 flex-wrap">
                   <span
                     style={{
-                      fontSize: "0.88rem",
-                      color: "#94a3b8",
+                      fontFamily: "var(--font-sans)",
+                      fontSize: "2.2rem",
+                      fontWeight: 200,
+                      letterSpacing: "-0.03em",
+                      color: "#e8edf3",
+                    }}
+                  >
+                    {tier.price}
+                  </span>
+                  {tier.priceNote && !tier.priceNote.startsWith("(") && (
+                    <span
+                      style={{
+                        fontSize: "0.88rem",
+                        color: "#94a3b8",
+                        fontWeight: 300,
+                      }}
+                    >
+                      {tier.priceNote}
+                    </span>
+                  )}
+                </div>
+                {tier.priceNote && tier.priceNote.startsWith("(") && (
+                  <div
+                    style={{
+                      fontSize: "0.72rem",
+                      color: "#4b5e78",
                       fontWeight: 300,
+                      marginTop: "2px",
                     }}
                   >
                     {tier.priceNote}
-                  </span>
+                  </div>
                 )}
               </div>
 
@@ -284,7 +278,7 @@ export function MembershipTierSection() {
               </div>
 
               {/* Features */}
-              <div className="flex flex-col gap-2.5 mb-7">
+              <div className="flex flex-col gap-2.5">
                 {tier.features.map((f, i) => (
                   <div
                     key={i}
@@ -309,17 +303,25 @@ export function MembershipTierSection() {
                   </div>
                 ))}
               </div>
-
-              {/* CTA */}
-              <Link
-                href="/onboarding"
-                className="block w-full py-3 rounded-[10px] text-center text-[0.82rem] font-medium transition-all duration-300 hover:opacity-90"
-                style={tier.btnStyle as React.CSSProperties}
-              >
-                {tier.featured ? "지금 시작하기" : "시작하기"}
-              </Link>
             </div>
           ))}
+        </div>
+
+        {/* Single CTA */}
+        <div className="text-center mt-12 landing-reveal">
+          <Link
+            href="/onboarding"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-[12px] text-[0.88rem] font-medium transition-all duration-300 hover:opacity-90"
+            style={{ background: "#FF5E32", color: "white" }}
+          >
+            클라우드 멤버십 시작하기
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </Link>
+          <p style={{ fontSize: "0.75rem", color: "#4b5e78", marginTop: "12px", fontWeight: 300 }}>
+            썬더·라이트닝은 팬 신뢰 점수 달성 시 자동 승급됩니다
+          </p>
         </div>
       </div>
     </section>
