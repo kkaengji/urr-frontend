@@ -1,9 +1,5 @@
-import { fetchWithAuth } from "@/shared/api";
-import type { ApiBaseResponse } from "../model/types";
+import { delay } from "@/shared/lib/mockDelay";
 
 export async function logout(): Promise<void> {
-  await fetchWithAuth<ApiBaseResponse<Record<string, never>>>(
-    "/auth/logout",
-    { method: "POST", service: "users" },
-  );
+  await delay(200);
 }

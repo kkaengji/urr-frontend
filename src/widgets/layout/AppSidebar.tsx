@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Crown,
+  LogOut,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui";
@@ -19,6 +20,7 @@ import { SidebarNavItem } from "./SidebarNavItem";
 import { ArtistTreeItem } from "./ArtistTreeItem";
 import { useLayout } from "./model/useLayout";
 import { useCurrentUser } from "@/features/auth/model/useCurrentUser";
+import { useLogout } from "@/features/auth/model/useLogout";
 import { useArtists } from "@/features/artist/model/useArtists";
 import { TierBadge } from "@/entities/user";
 import { mockUser } from "@/shared/lib/mocks/user";
@@ -51,6 +53,7 @@ export function AppSidebar() {
 
   const collapsed = !isSidebarExpanded;
   const { data: meData } = useCurrentUser();
+  const handleLogout = useLogout();
   const { data: allArtists = [] } = useArtists();
   const displayName = meData?.nickname ?? mockUser.name;
 
@@ -213,44 +216,72 @@ export function AppSidebar() {
       {/* Footer: User Profile */}
       <div className="shrink-0 border-t border-sidebar-border">
         {collapsed ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/my-page"
-                className="flex items-center justify-center h-14 hover:bg-sidebar-accent/50 transition-colors"
-              >
-                <Avatar className="size-8">
-                  <AvatarImage src={mockUser.avatar} alt={displayName} />
-                  <AvatarFallback className="text-xs font-medium bg-muted">
-                    {displayName.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right" sideOffset={8}>
-              <div className="flex items-center gap-2">
-                <span>{displayName}</span>
-                <TierBadge tier={mockUser.tier} size="sm" />
-              </div>
-            </TooltipContent>
-          </Tooltip>
+          <div className="flex flex-col items-center py-2 gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/my-page"
+                  className="flex items-center justify-center size-10 rounded-md hover:bg-sidebar-accent/50 transition-colors"
+                >
+                  <Avatar className="size-8">
+                    <AvatarImage src={mockUser.avatar} alt={displayName} />
+                    <AvatarFallback className="text-xs font-medium bg-muted">
+                      {displayName.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={8}>
+                <div className="flex items-center gap-2">
+                  <span>{displayName}</span>
+                  <TierBadge tier={mockUser.tier} size="sm" />
+                </div>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center justify-center size-10 rounded-md text-sidebar-muted-foreground hover:text-red-500 hover:bg-sidebar-accent/50 transition-colors cursor-pointer"
+                >
+                  <LogOut size={16} />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={8}>
+                로그아웃
+              </TooltipContent>
+            </Tooltip>
+          </div>
         ) : (
-          <Link
-            href="/my-page"
-            className="flex items-center gap-3 px-4 h-14 hover:bg-sidebar-accent/50 transition-colors"
-          >
-            <Avatar className="size-8 shrink-0">
-              <AvatarImage src={mockUser.avatar} alt={displayName} />
-              <AvatarFallback className="text-xs font-medium bg-muted">
-                {displayName.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center gap-1 px-3 h-14">
+            <Link
+              href="/my-page"
+              className="flex items-center gap-3 flex-1 min-w-0 h-full hover:bg-sidebar-accent/50 rounded-md px-1 transition-colors"
+            >
+              <Avatar className="size-8 shrink-0">
+                <AvatarImage src={mockUser.avatar} alt={displayName} />
+                <AvatarFallback className="text-xs font-medium bg-muted">
+                  {displayName.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
               <span className="text-sm font-medium text-sidebar-foreground truncate">
                 {displayName}
               </span>
-            </div>
-          </Link>
+            </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={handleLogout}
+                  className="shrink-0 flex items-center justify-center size-8 rounded-md text-sidebar-muted-foreground hover:text-red-500 hover:bg-sidebar-accent/50 transition-colors cursor-pointer"
+                >
+                  <LogOut size={16} />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={8}>
+                로그아웃
+              </TooltipContent>
+            </Tooltip>
+          </div>
         )}
       </div>
     </aside>

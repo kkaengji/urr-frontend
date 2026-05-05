@@ -1,4 +1,4 @@
-export type MockEventCategory = "concert" | "fanmeeting" | "festival" | "musical" | "etc";
+export type MockEventCategory = "concert" | "fanmeeting" | "domestic" | "festival" | "musical" | "etc";
 
 export interface MockEventSection {
   name: string;
@@ -381,7 +381,7 @@ export const mockEvents: MockEvent[] = [
     venueName: "KSPO DOME (올림픽 체조 경기장)", venueAddress: "서울특별시 송파구 올림픽로 424",
     venueTemplateId: 1,
     openDate: "2026-08-08", endDate: "2026-08-09", active: true,
-    category: "concert", tags: ["단독판매", "안심예매"],
+    category: "domestic", tags: ["단독판매", "안심예매"],
     runtime: "공연 시간 미정", ageRating: "만 12세 이상",
     castInfo: "Official HIGE DANDism",
     notices: [

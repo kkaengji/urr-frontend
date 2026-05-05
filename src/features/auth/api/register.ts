@@ -1,5 +1,5 @@
-import { fetchWithAuth } from "@/shared/api";
-import type { ApiBaseResponse, AuthResponseData } from "../model/types";
+import { delay } from "@/shared/lib/mockDelay";
+import type { AuthResponseData } from "../model/types";
 
 export interface RegisterParams {
   email: string;
@@ -14,13 +14,24 @@ export interface RegisterParams {
 export async function register(
   params: RegisterParams,
 ): Promise<AuthResponseData> {
-  const res = await fetchWithAuth<ApiBaseResponse<AuthResponseData>>(
-    "/auth/register",
-    {
-      method: "POST",
-      body: params,
-      service: "users",
+  await delay(600);
+  return {
+    tokens: {
+      accessToken: "mock-access-token",
+      tokenType: "Bearer",
+      expiresInSeconds: 3600,
     },
-  );
-  return res.data.data;
+    user: {
+      userId: 1,
+      email: params.email,
+      nickname: params.name,
+      role: "USER",
+      onboardingCompleted: true,
+      marketingConsent: params.marketingConsent,
+      pushConsent: false,
+      smsConsent: false,
+    },
+    onboardingRequired: false,
+    nextPath: "/",
+  };
 }

@@ -5,12 +5,32 @@
 **매크로·봇이 점령한 대기열** 문제를 해결하기 위해, 팬 활동 점수 기반 멤버십 등급으로 티켓 우선권을 차등 부여하는 공정 티켓팅 서비스입니다.  
 티켓 예매 → 양도 → 팬 커뮤니티를 단일 플랫폼으로 통합합니다.
 
-**15명 팀 · 약 10주**
+| | |
+|---|---|
+| 협업 레포지토리 | [KTCloud-TechUp/urr-frontend](https://github.com/KTCloud-TechUp/urr-frontend) |
+| 포트폴리오 레포 | [kkaengji/urr-frontend](https://github.com/kkaengji/urr-frontend) |
+| 라이브 데모 | `배포 후 추가 예정` |
 
+---
+
+## 이 레포지토리에 대해
+
+원래 **15명 팀 · 약 10주** 협업 프로젝트로, 프론트엔드(Next.js) + 백엔드(Spring Boot MSA) + 인프라(AWS EKS/S3/CloudFront)를 함께 운영했습니다.
+
+| 협업 당시 규모 | |
 |---|---|
 | 연동 API | 45개 엔드포인트 |
 | 개발 페이지 | 10개 라우트 |
 | 머지 PR | 49회 |
+
+**포트폴리오 전환 시 변경 사항**
+
+인프라 비용 문제로 백엔드 서버를 종료하고, 프론트엔드만 Vercel에 배포하는 구조로 전환했습니다.
+협업 중 일정·합의 제약으로 미뤄뒀던 디자인·UX 개선도 함께 진행합니다.
+
+- 실제 API 호출 → mock 데이터로 전환 (TanStack Query 구조 유지)
+- JWT 인증 → mock 유저 기반 인증으로 교체
+- 플로우가 끊겼던 부분 복원 및 UX 개선
 
 ---
 
@@ -105,7 +125,7 @@ Refresh Token — httpOnly 쿠키 (JS 접근 불가, 브라우저 자동 전송)
 
 ## 아키텍처
 
-### 시스템 구조
+### 협업 당시 시스템 구조
 
 ```mermaid
 graph TD
@@ -139,7 +159,7 @@ graph TD
     TS -->|Bearer token + credentials: include| CF
 ```
 
-> 현재 S3 정적 배포. SSR 적용 시 sessionStorage 백업 제거 가능.
+> 포트폴리오 버전은 백엔드 없이 Vercel + mock 데이터로 동작합니다.
 
 ### Feature-Sliced Design (FSD)
 
@@ -242,28 +262,7 @@ npm run dev    # http://localhost:3000
 npm run build  # 빌드 검증
 ```
 
-### 환경 변수
-
-`.env` — 프로덕션 기본값 (저장소 포함)
-
-| 변수                                           | 설명                |
-| ---------------------------------------------- | ------------------- |
-| `NEXT_PUBLIC_API_BASE_URL`                     | 백엔드 API 기본 URL |
-| `NEXT_PUBLIC_KAKAO_CLIENT_ID` / `REDIRECT_URI` | 카카오 OAuth        |
-| `NEXT_PUBLIC_NAVER_CLIENT_ID` / `REDIRECT_URI` | 네이버 OAuth        |
-
-`.env.local` — 로컬 개발용 (git 제외, 직접 생성)
-
-```bash
-NEXT_PUBLIC_PAYMENTS_API_URL=http://localhost:8081/api/v1
-NEXT_PUBLIC_COMMUNITY_API_URL=http://localhost:8082/api/v1
-NEXT_PUBLIC_QUEUE_API_URL=http://localhost:8083/api/v1
-NEXT_PUBLIC_USERS_API_URL=http://localhost:8084/api/v1
-NEXT_PUBLIC_EVENTS_API_URL=http://localhost:8085/api/v1
-NEXT_PUBLIC_TICKETING_API_URL=http://localhost:8086/api/v1
-```
-
-미설정 서비스는 `NEXT_PUBLIC_API_BASE_URL`(프로덕션)로 자동 fallback.
+mock 데이터로 동작하므로 별도 환경 변수나 백엔드 서버 없이 바로 실행됩니다.
 
 ---
 
@@ -288,7 +287,6 @@ NEXT_PUBLIC_TICKETING_API_URL=http://localhost:8086/api/v1
 
 ## 관련 문서
 
-| 문서                                 | 내용                                          |
-| ------------------------------------ | --------------------------------------------- |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | 브랜치 전략, 커밋 규칙, AI 에이전트 작업 규칙 |
-| [`CLAUDE.md`](CLAUDE.md)             | AI 에이전트용 프로젝트 컨텍스트 가이드        |
+| 문서                     | 내용                                   |
+| ------------------------ | -------------------------------------- |
+| [`CLAUDE.md`](CLAUDE.md) | AI 에이전트용 프로젝트 컨텍스트 가이드 |

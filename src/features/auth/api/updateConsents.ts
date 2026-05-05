@@ -1,5 +1,4 @@
-import { fetchWithAuth } from "@/shared/api";
-import { getUserIdFromToken } from "@/shared/lib/jwt";
+import { delay } from "@/shared/lib/mockDelay";
 
 export interface UpdateConsentsParams {
   marketingConsent: boolean;
@@ -7,12 +6,6 @@ export interface UpdateConsentsParams {
   smsConsent: boolean;
 }
 
-export async function updateConsents(params: UpdateConsentsParams): Promise<void> {
-  const userId = getUserIdFromToken();
-  await fetchWithAuth("/auth/me/consents", {
-    method: "PATCH",
-    body: params,
-    service: "users",
-    headers: userId ? { "X-User-Id": String(userId) } : {},
-  });
+export async function updateConsents(_params: UpdateConsentsParams): Promise<void> {
+  await delay(300);
 }

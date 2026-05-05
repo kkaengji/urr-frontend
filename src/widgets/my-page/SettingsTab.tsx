@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useQueryClient } from '@tanstack/react-query'
 import { AUTH_ME_QUERY_KEY } from '@/features/auth/model/useCurrentUser'
 import type { AuthUser } from '@/features/auth/model/types'
 import { Check, Loader2, LogOut, Pencil, UserX } from 'lucide-react'
@@ -23,8 +21,9 @@ import {
 } from '@/shared/ui/alert-dialog'
 import { toast } from 'sonner'
 import { AccountDeleteDialog } from './AccountDeleteDialog'
-import { logout, updateConsents, updateName } from '@/features/auth/api'
-import { tokenStore } from '@/shared/api'
+import { updateConsents, updateName } from '@/features/auth/api'
+import { useLogout } from '@/features/auth/model/useLogout'
+import { useQueryClient } from '@tanstack/react-query'
 import type { User } from '@/shared/types'
 
 interface SettingsTabProps {
@@ -37,7 +36,7 @@ interface SettingsTabProps {
 }
 
 export function SettingsTab({ user, initialConsents }: SettingsTabProps) {
-  const router = useRouter()
+  const handleLogout = useLogout()
   const queryClient = useQueryClient()
 
   // Profile editing
@@ -286,17 +285,7 @@ export function SettingsTab({ user, initialConsents }: SettingsTabProps) {
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
             <AlertDialogAction
-              onClick={async () => {
-                try {
-                  await logout()
-                } catch {
-                  toast.error("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.")
-                  return
-                }
-                tokenStore.clearToken()
-                queryClient.clear()
-                router.replace('/landing')
-              }}
+              onClick={handleLogout}
             >
               로그아웃
             </AlertDialogAction>
