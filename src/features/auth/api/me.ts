@@ -1,4 +1,3 @@
-import { tokenStore } from "@/shared/api/tokenStore";
 import { delay } from "@/shared/lib/mockDelay";
 import type { AuthUser } from "../model/types";
 import { mockUser } from "@/shared/lib/mocks/user";
@@ -24,8 +23,5 @@ const mockAuthUser: AuthUser = {
 
 export async function fetchMe(): Promise<AuthUser> {
   await delay(300);
-  if (!tokenStore.getToken()) {
-    throw new Error("Unauthorized");
-  }
   return mockAuthUser;
 }

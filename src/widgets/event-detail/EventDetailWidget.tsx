@@ -166,7 +166,7 @@ export function EventDetailWidget({ eventId }: EventDetailWidgetProps) {
   }
 
   const presalePolicies = presalePolicyResults.map((r) => r.data);
-  const eventStatus = deriveEventStatus(shows);
+  const eventStatus: BookingStatus = !eventData.active ? "closed" : deriveEventStatus(shows);
   const event = mapToEventDetail(eventData, shows, presalePolicies, eventStatus);
 
   return (

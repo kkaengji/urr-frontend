@@ -64,6 +64,7 @@ export function EventsSection({
                     src={nextEvent.poster}
                     alt={nextEvent.title}
                     fill
+                    sizes="160px"
                     className="object-cover"
                   />
                 ) : (
@@ -123,6 +124,7 @@ export function EventsSection({
                           src={event.poster}
                           alt={event.title}
                           fill
+                          sizes="36px"
                           className="object-cover"
                         />
                       ) : (

@@ -23,6 +23,8 @@ interface BookingStore {
   reservationRefs: ReservationRef[];
   /** Toss 결제 orderId — 결제 레코드와 reservationRefs 연결 */
   orderId: string | null;
+  /** zone/performance 플로우에서 선택한 매수 */
+  zoneQuantity: number;
 
   // 액션
   setEventLoaded: (dateId: string) => void;
@@ -40,6 +42,7 @@ interface BookingStore {
   setQueueToken: (token: string | null) => void;
   /** bookTicket() 완료 후 예약 참조 배열과 orderId를 store에 저장 */
   setReservations: (refs: ReservationRef[], orderId: string) => void;
+  setZoneQuantity: (n: number) => void;
 }
 
 export const useBookingStore = create<BookingStore>((set) => ({
@@ -54,6 +57,7 @@ export const useBookingStore = create<BookingStore>((set) => ({
   queueToken: null,
   reservationRefs: [],
   orderId: null,
+  zoneQuantity: 1,
 
   setEventLoaded: (dateId) => set({ selectedDateId: dateId, isLoading: false }),
 
@@ -67,7 +71,7 @@ export const useBookingStore = create<BookingStore>((set) => ({
   transitionTo: (state) =>
     set((s) => {
       if (state === "seats-section") {
-        return { ...s, bookingState: state, selectedSeatIds: [], selectedSectionId: null };
+        return { ...s, bookingState: state, selectedSeatIds: [], selectedSectionId: null, zoneQuantity: 1 };
       }
       return { ...s, bookingState: state };
     }),
@@ -95,6 +99,7 @@ export const useBookingStore = create<BookingStore>((set) => ({
       seatTimerSecondsLeft: null,
       reservationRefs: [],
       orderId: null,
+      zoneQuantity: 1,
     }),
 
   setConfirmationData: (data) => set({ confirmationData: data }),
@@ -104,4 +109,6 @@ export const useBookingStore = create<BookingStore>((set) => ({
   setQueueToken: (token) => set({ queueToken: token }),
 
   setReservations: (refs, orderId) => set({ reservationRefs: refs, orderId }),
+
+  setZoneQuantity: (n) => set({ zoneQuantity: n }),
 }));

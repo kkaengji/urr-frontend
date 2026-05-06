@@ -11,6 +11,8 @@ import { PriceDisplay } from "@/shared/ui";
 import { BookingProvider, useBooking } from "@/features/booking/model/BookingContext";
 import { BookingModal } from "@/widgets/booking/BookingModal";
 import type { EventDetail } from "@/features/event";
+import type { TierLevel } from "@/shared/types";
+import { mockUser } from "@/shared/lib/mocks/user";
 
 interface EventBookingSidebarProps {
   event: EventDetail;
@@ -27,6 +29,16 @@ function formatTierTime(value: unknown): string {
   const d = parseApiDate(value);
   if (isNaN(d.getTime())) return "-";
   return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+function getUserTierForEvent(artistId: string): TierLevel {
+  if (artistId) {
+    const membership = mockUser.memberships.find(
+      (m) => m.artistId === artistId && m.isActive,
+    );
+    if (membership) return membership.tier;
+  }
+  return mockUser.tier;
 }
 
 function EventBookingSidebarInner({ event }: EventBookingSidebarProps) {
@@ -47,11 +59,28 @@ function EventBookingSidebarInner({ event }: EventBookingSidebarProps) {
   const isClosed = event.status === "closed";
 
   const now = new Date();
-  const hasAnyWindowOpened =
+  const userTier = getUserTierForEvent(event.artistId);
+  const userWindow = bookingWindows.find((w) => w.tier === userTier);
+
+  const userWindowOpened =
     bookingWindows.length === 0
       ? true
-      : bookingWindows.some((w) => new Date(w.opensAt) <= now);
-  const canBook = isBookable && hasAnyWindowOpened;
+      : userWindow
+        ? new Date(userWindow.opensAt) <= now
+        : bookingWindows.some((w) => new Date(w.opensAt) <= now);
+
+  const canBook = isBookable && userWindowOpened;
+
+  function getButtonLabel(): string {
+    if (isSoldOut) return "매진";
+    if (isClosed) return "판매 종료";
+    if (!canBook) {
+      const openTime = userWindow ?? bookingWindows[0];
+      if (openTime) return `${formatTierTime(openTime.opensAt)} 오픈`;
+      return "오픈 예정";
+    }
+    return "예매하기";
+  }
 
   const handleBookingClick = () => {
     startBooking();
@@ -130,17 +159,45 @@ function EventBookingSidebarInner({ event }: EventBookingSidebarProps) {
         <div className="border-t border-border" />
 
         {/* Tier schedule summary */}
-        <div className="space-y-2.5">
-          <h4 className="text-sm font-semibold">티어별 예매 오픈</h4>
-          <div className="space-y-1.5">
-            {bookingWindows.map((w) => (
-              <div key={w.tier} className="flex items-center justify-between">
-                <TierBadge tier={w.tier} size="sm" />
-                <span className="text-xs text-muted-foreground">{formatTierTime(w.opensAt)} ~</span>
-              </div>
-            ))}
+        {bookingWindows.length > 0 && (
+          <div className="space-y-2.5">
+            <h4 className="text-sm font-semibold">티어별 예매 오픈</h4>
+            <div className="space-y-0.5">
+              {bookingWindows.map((w) => {
+                const isUserTier = w.tier === userTier;
+                const isOpened = new Date(w.opensAt) <= now;
+                return (
+                  <div
+                    key={w.tier}
+                    className={cn(
+                      "flex items-center justify-between rounded-md px-2 py-1.5",
+                      isUserTier && "bg-primary/5",
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <TierBadge tier={w.tier} size="sm" />
+                      {isUserTier && (
+                        <span className="text-[10px] font-semibold text-primary bg-primary/15 rounded px-1.5 py-0.5 leading-none">
+                          나
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {isBookable && isOpened && (
+                        <span className="text-[10px] font-semibold text-booking-open">
+                          예매 중
+                        </span>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        {formatTierTime(w.opensAt)} ~
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Separator */}
         <div className="border-t border-border" />
@@ -151,13 +208,7 @@ function EventBookingSidebarInner({ event }: EventBookingSidebarProps) {
           disabled={!canBook}
           onClick={handleBookingClick}
         >
-          {isSoldOut
-            ? "매진"
-            : isClosed
-              ? "판매 종료"
-              : canBook
-                ? "예매하기"
-                : "오픈 예정"}
+          {getButtonLabel()}
         </Button>
 
         {/* Safety notice */}

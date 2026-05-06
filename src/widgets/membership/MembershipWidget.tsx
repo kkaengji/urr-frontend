@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { useQueryClient } from '@tanstack/react-query'
 import {
   ArtistSelectStep,
   MembershipIntroStep,
@@ -12,9 +11,6 @@ import {
   useMemberships,
 } from '@/features/membership'
 import { useArtists } from '@/features/artist'
-import { confirmPayment } from '@/features/payment/api/confirmPayment'
-import { getMemberships } from '@/features/membership/api/getMemberships'
-import { useCurrentUser, AUTH_ME_QUERY_KEY } from '@/features/auth/model/useCurrentUser'
 import type { Artist, TierLevel } from '@/shared/types'
 
 type Step = 'select' | 'intro' | 'payment' | 'profile' | 'complete'
@@ -23,63 +19,10 @@ export function MembershipWidget() {
   const searchParams = useSearchParams()
   const [step, setStep] = useState<Step>('select')
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null)
-  const [membershipId, setMembershipId] = useState<string | null>(null)
+  const [membershipId] = useState<string | null>(null)
   const [profileData, setProfileData] = useState<{ nickname: string; tier: TierLevel } | null>(null)
   const { data: memberships = [] } = useMemberships()
   const { data: artists = [] } = useArtists()
-  const { data: currentUser } = useCurrentUser()
-  const queryClient = useQueryClient()
-  const callbackHandled = useRef(false)
-
-  // Toss 결제 성공 콜백: /membership?paymentKey=...&orderId=...&amount=... 감지
-  useEffect(() => {
-    if (callbackHandled.current) return
-    if (typeof window === 'undefined') return
-    if (!currentUser?.userId) return
-
-    const params = new URLSearchParams(window.location.search)
-    const paymentKey = params.get('paymentKey')
-    const orderId = params.get('orderId')
-    const amount = params.get('amount')
-    const paymentFail = params.get('paymentFail')
-
-    if (paymentFail) {
-      window.history.replaceState({}, '', window.location.pathname)
-      sessionStorage.removeItem('urr:toss:membership')
-      return
-    }
-
-    if (!paymentKey || !orderId || !amount) return
-
-    const raw = sessionStorage.getItem('urr:toss:membership')
-    if (!raw) return
-
-    // artists 데이터가 아직 로드되지 않았으면 대기
-    if (artists.length === 0) return
-
-    callbackHandled.current = true
-    sessionStorage.removeItem('urr:toss:membership')
-    window.history.replaceState({}, '', window.location.pathname)
-
-    const { artistId } = JSON.parse(raw) as { orderId: string; paymentId: string; artistId: string }
-
-    // 리다이렉트 후 state가 초기화되므로 artistId로 selectedArtist 복원
-    const artist = artists.find((a) => a.id === artistId)
-    if (artist) queueMicrotask(() => setSelectedArtist(artist))
-
-    confirmPayment({ paymentKey, orderId, amount: Number(amount), userId: currentUser.userId })
-      .then(() => getMemberships(currentUser.userId))
-      .then((fresh) => {
-        const found = fresh.find((m) => m.artistId === artistId)
-        if (found) setMembershipId(found.id)
-        queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY })
-        setStep('profile')
-      })
-      .catch(() => {
-        // 실패 시 payment 단계로 복귀
-        setStep('payment')
-      })
-  }, [currentUser?.userId, artists, queryClient])
 
   // reset=1 파라미터가 있으면 select 단계로 초기화 (사이드바에서 재진입 시)
   useEffect(() => {

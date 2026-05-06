@@ -12,7 +12,7 @@ import { parseSeatDisplay } from "@/shared/lib/format";
 import { bookTicket } from "@/features/booking/api/bookTicket";
 import { cancelReservation } from "@/features/booking/api/cancelReservation";
 import { createPaymentRecord } from "@/features/payment/api/createPaymentRecord";
-import { getTossPayments, TOSS_METHOD_MAP } from "@/features/payment/lib/toss";
+import { getTossPayments, TOSS_METHOD_MAP, TOSS_CLIENT_KEY } from "@/features/payment/lib/toss";
 import { ApiError } from "@/shared/api/client";
 import {
   useBookingStore,
@@ -41,9 +41,13 @@ export function PaymentView() {
     selectedSeatIds,
     selectedSectionId,
     sectionsForDate,
+    mockSections,
+    flowType,
+    zoneQuantity,
     userTier,
     tierWindows,
     transitionTo,
+    setConfirmationData,
   } = useBooking();
 
   const { reservationRefs, setReservations } = useBookingStore();
@@ -51,6 +55,7 @@ export function PaymentView() {
   const bookingSession = useBookingSession();
 
   const [phase, setPhase] = useState<PaymentPhase>("confirm-seats");
+  const [deliveryMethod, setDeliveryMethod] = useState<"mobile" | "onsite">("mobile");
   const retryTimer = useSeatTimer(60);
 
   const {
@@ -68,22 +73,34 @@ export function PaymentView() {
     initialPhone: currentUser?.phoneNumber,
   });
 
-  const section = useMemo(
-    () => sectionsForDate.find((s) => s.id === selectedSectionId) ?? null,
-    [sectionsForDate, selectedSectionId],
-  );
+  const isZoneOrPerformance = flowType !== "seat-map";
+
+  // zone/performance: mockSections에서 section 조회, seat-map: sectionsForDate에서 조회
+  const section = useMemo(() => {
+    if (isZoneOrPerformance) {
+      return mockSections.find((s) => s.id === selectedSectionId) ?? null;
+    }
+    return sectionsForDate.find((s) => s.id === selectedSectionId) ?? null;
+  }, [isZoneOrPerformance, mockSections, sectionsForDate, selectedSectionId]);
 
   const tierFee = tierWindows.find((w) => w.tier === userTier)?.fee ?? 0;
   const hasUserTierWindow = tierWindows.some((w) => w.tier === userTier);
-  const seatCount = selectedSeatIds.length;
+
+  // zone/performance는 zoneQuantity, seat-map은 selectedSeatIds.length
+  const seatCount = isZoneOrPerformance ? zoneQuantity : selectedSeatIds.length;
   const subtotal = section ? section.price * seatCount : 0;
   const feeTotal = tierFee * seatCount;
   const total = subtotal + feeTotal;
 
+  // 표시용 좌석명: zone/performance는 "구역명 N번", seat-map은 기존 방식
   const seatDisplayNames = useMemo(() => {
+    if (isZoneOrPerformance) {
+      if (!selectedSectionId) return [];
+      return Array.from({ length: zoneQuantity }, (_, i) => `${selectedSectionId} ${i + 1}번`);
+    }
     if (!section) return [];
     return selectedSeatIds.map((id) => parseSeatDisplay(id, section.name));
-  }, [selectedSeatIds, section]);
+  }, [isZoneOrPerformance, selectedSectionId, zoneQuantity, section, selectedSeatIds]);
 
   // Watch retry timer expiry
   useEffect(() => {
@@ -102,20 +119,23 @@ export function PaymentView() {
   }, []);
 
   const handleSubmitPayment = useCallback(async () => {
-    if (!selectedDate || !artistId) return;
+    if (!selectedDate) return;
     setPhase("processing");
 
     try {
-      // 좌석 bulk 선점 (최대 4석)
+      // zone/performance: 가상 좌석 ID 생성, seat-map: 실제 좌석 ID
+      const seatIdsForBooking = isZoneOrPerformance
+        ? Array.from({ length: zoneQuantity }, (_, i) => `zone-${selectedSectionId}-${i + 1}`)
+        : selectedSeatIds;
+
       const reservation = await bookTicket({
         eventId,
         showId: selectedDate.id,
-        artistId,
-        seatIds: selectedSeatIds,
+        artistId: artistId ?? "",
+        seatIds: seatIdsForBooking,
         userId: currentUser?.userId ?? "",
       });
 
-      // 선점 직후 refs 저장 — createPaymentRecord/requestPayment 실패 시에도 취소 가능
       const reservationRefList: ReservationRef[] = [
         {
           eventId: Number(eventId),
@@ -124,64 +144,71 @@ export function PaymentView() {
           reservationIds: reservation.reservationIds,
         },
       ];
-      setReservations(reservationRefList, "");
+      setReservations(reservationRefList, reservation.orderId);
 
-      const orderId = reservation.orderId;
-      const payableAmount = reservation.totalAmount;
-
-      // orderId 확정 후 store 갱신
-      // — Toss 리다이렉트 후 JS 메모리 초기화되므로 sessionStorage 백업 필수
-      setReservations(reservationRefList, orderId);
-
-      // Toss 결제창 띄우기 전, 백엔드에 orderId 사전 등록
-      // — confirmPayment 시 이 orderId로 결제 레코드를 조회하므로 반드시 먼저 호출
-      const referenceId = reservation.reservationIds.join(",");
       await createPaymentRecord({
         userId: currentUser?.userId ?? "",
-        referenceId,
-        orderId,
-        amount: payableAmount,
+        referenceId: reservation.reservationIds.join(","),
+        orderId: reservation.orderId,
+        amount: total,
       });
 
-      // Toss 리다이렉트 복귀 후 /booking/complete 페이지에서 복원에 사용
       const confirmationData: ConfirmationData = {
         bookingId: reservation.reservationIds[0] ?? "",
-        tickets: selectedSeatIds.map((id) => {
-          const parts = id.split("-");
-          return {
-            seatId: id,
-            sectionName: section?.name ?? "",
-            row: parts.length >= 2 ? parts[parts.length - 2] : id,
-            seatNumber: parts.length >= 1 ? parts[parts.length - 1] : id,
-            price: section?.price ?? 0,
-            tierFee,
-          };
-        }),
-        totalAmount: payableAmount,
+        tickets: isZoneOrPerformance
+          ? Array.from({ length: zoneQuantity }, (_, i) => ({
+              seatId: `zone-${selectedSectionId}-${i + 1}`,
+              sectionName: section?.name ?? "",
+              row: "",
+              seatNumber: String(i + 1),
+              price: section?.price ?? 0,
+              tierFee,
+            }))
+          : seatIdsForBooking.map((id) => {
+              const parts = id.split("-");
+              return {
+                seatId: id,
+                sectionName: section?.name ?? "",
+                row: parts.length >= 2 ? parts[parts.length - 2] : id,
+                seatNumber: parts.length >= 1 ? parts[parts.length - 1] : id,
+                price: section?.price ?? 0,
+                tierFee,
+              };
+            }),
+        totalAmount: total,
         bookedAt: new Date().toISOString(),
         eventTitle: event?.title ?? "",
         eventVenue: event?.venue ?? "",
         showDate: selectedDate?.date ?? "",
         userTier,
+        flowType,
+        zoneQuantity: isZoneOrPerformance ? zoneQuantity : undefined,
+        deliveryMethod: flowType === "performance" ? deliveryMethod : undefined,
       };
+
       bookingSession.save(
         reservationRefList,
         confirmationData,
         String(currentUser?.userId ?? ""),
       );
 
+      // 데모 모드: Toss 키 없으면 결제창 없이 바로 완료
+      if (!TOSS_CLIENT_KEY) {
+        setConfirmationData(confirmationData);
+        transitionTo("confirmation");
+        return;
+      }
+
       const tossPayments = await getTossPayments();
       await tossPayments.requestPayment(TOSS_METHOD_MAP[selectedMethod], {
-        amount: payableAmount,
-        orderId,
+        amount: total,
+        orderId: reservation.orderId,
         orderName: `${event?.title ?? "티켓"} ${seatCount}매`,
         successUrl: `${window.location.origin}/booking/complete`,
         failUrl: `${window.location.origin}${window.location.pathname}?paymentFail=1`,
         customerName: buyerName,
         customerMobilePhone: buyerPhone.replace(/-/g, ""),
       });
-      // requestPayment 는 성공 시 successUrl?paymentKey=...&orderId=...&amount=... 로 리다이렉트
-      // — 이 이후 코드는 실행되지 않음
     } catch (err) {
       bookingSession.clear();
       if (err instanceof ApiError && err.status === 409) {
@@ -196,6 +223,9 @@ export function PaymentView() {
     selectedDate,
     artistId,
     eventId,
+    isZoneOrPerformance,
+    zoneQuantity,
+    selectedSectionId,
     selectedSeatIds,
     currentUser,
     buyerName,
@@ -206,21 +236,30 @@ export function PaymentView() {
     section,
     tierFee,
     userTier,
+    flowType,
+    deliveryMethod,
+    total,
     retryTimer,
     setReservations,
     bookingSession,
+    setConfirmationData,
+    transitionTo,
   ]);
 
+  // 취소: zone은 구역 선택으로, 그 외는 좌석 개별 선택으로
   const handleCancel = useCallback(() => {
-    transitionTo("seats-individual");
-  }, [transitionTo]);
+    if (flowType === "zone") {
+      transitionTo("seats-section");
+    } else {
+      transitionTo("seats-individual");
+    }
+  }, [flowType, transitionTo]);
 
   const handleRetry = useCallback(() => {
     setPhase("payment-form");
   }, []);
 
   const handleExitBooking = useCallback(async () => {
-    // 좌석 선점이 있으면 취소 API 호출해 선점 해제
     if (reservationRefs.length > 0 && currentUser) {
       await Promise.allSettled(
         reservationRefs.flatMap((ref) =>
@@ -233,11 +272,9 @@ export function PaymentView() {
         ),
       );
     }
-    // 구역 선택 화면으로 복귀 (취소 후 다른 좌석 선택 가능)
     transitionTo("seats-section");
   }, [reservationRefs, currentUser, transitionTo]);
 
-  // --- Phase 1: Seat Confirmation ---
   if (phase === "confirm-seats") {
     return (
       <PaymentConfirmPhase
@@ -256,7 +293,6 @@ export function PaymentView() {
     );
   }
 
-  // --- Phase 2: Payment Form ---
   if (phase === "payment-form") {
     return (
       <PaymentFormPhase
@@ -272,22 +308,23 @@ export function PaymentView() {
         selectedMethod={selectedMethod}
         termsAgreed={termsAgreed}
         isFormValid={isFormValid}
+        showDeliveryMethod={flowType === "performance"}
+        deliveryMethod={deliveryMethod}
         onBack={handleBackToConfirm}
         onNameChange={handleNameChange}
         onPhoneChange={handlePhoneChange}
         onMethodChange={setSelectedMethod}
         onToggleTerms={toggleTerms}
         onSubmit={handleSubmitPayment}
+        onDeliveryMethodChange={setDeliveryMethod}
       />
     );
   }
 
-  // --- Processing phase ---
   if (phase === "processing") {
     return <PaymentProcessingOverlay />;
   }
 
-  // --- Seats taken phase (409) ---
   if (phase === "seats-taken") {
     return (
       <div className="fixed inset-0 z-40">
@@ -312,7 +349,6 @@ export function PaymentView() {
     );
   }
 
-  // --- Failed-expired phase ---
   if (phase === "failed-expired") {
     return (
       <div className="fixed inset-0 z-40">
@@ -335,7 +371,6 @@ export function PaymentView() {
     );
   }
 
-  // --- Failed phase ---
   return (
     <div className="fixed inset-0 z-40">
       <div className="fixed inset-0 bg-black/50" />
@@ -344,9 +379,7 @@ export function PaymentView() {
           <div className="flex flex-col items-center gap-4 text-center">
             <CircleAlert size={48} className="text-destructive" />
             <h3 className="text-lg font-bold">결제에 실패했습니다</h3>
-            <p className="text-sm text-muted-foreground">
-              카드 승인이 거절되었습니다.
-            </p>
+            <p className="text-sm text-muted-foreground">카드 승인이 거절되었습니다.</p>
             <div className="px-4 py-3 rounded-lg bg-muted/50 border border-border w-full">
               <p className="text-xs text-muted-foreground mb-2">
                 좌석이 60초간 유지됩니다. 다시 시도해주세요.
@@ -354,11 +387,7 @@ export function PaymentView() {
               <TimerDisplay seconds={retryTimer.secondsLeft} size="lg" />
             </div>
             <div className="flex gap-3 w-full pt-2">
-              <Button
-                variant="ghost"
-                className="flex-1"
-                onClick={handleExitBooking}
-              >
+              <Button variant="ghost" className="flex-1" onClick={handleExitBooking}>
                 예매 종료
               </Button>
               <Button className="flex-1" onClick={handleRetry}>

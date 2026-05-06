@@ -44,6 +44,7 @@ function PopularEventCard({ event }: { event: EventListItem }) {
             src={event.poster}
             alt={event.title}
             fill
+            sizes="240px"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
@@ -97,6 +98,7 @@ function EventGridCard({ event }: { event: EventListItem }) {
             src={event.poster}
             alt={event.title}
             fill
+            sizes="(max-width: 1200px) 20vw, 240px"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
@@ -139,6 +141,7 @@ function EventListRow({ event }: { event: EventListItem }) {
             src={event.poster}
             alt={event.title}
             fill
+            sizes="72px"
             className="object-cover"
           />
         )}

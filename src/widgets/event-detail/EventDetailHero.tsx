@@ -58,6 +58,7 @@ export function EventDetailHero({ event }: EventDetailHeroProps) {
                 src={event.poster}
                 alt={event.title}
                 fill
+                sizes="280px"
                 className="object-cover"
                 priority
               />

@@ -12,11 +12,14 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import type {
   BookingState,
+  BookingFlowType,
   TierLevel,
   Section,
   EventDate,
   ConfirmationData,
 } from "@/shared/types";
+import { findMockEvent } from "@/shared/lib/mocks/events";
+import { getBookingFlowType } from "./bookingFlowUtils";
 const MAX_SEATS_PER_TIER: Record<string, number> = {
   LIGHTNING: 4,
   THUNDER: 4,
@@ -58,6 +61,7 @@ export interface BookingContextValue {
   eventId: string;
   artistId: string | null;
   bookingState: BookingState;
+  flowType: BookingFlowType;
   event: BookingEvent | null;
   eventDates: EventDate[];
   selectedDateId: string | null;
@@ -67,12 +71,14 @@ export interface BookingContextValue {
   selectedDate: EventDate | null;
   tierWindows: TierWindow[];
   sectionsForDate: Section[];
+  mockSections: Section[];
   isWindowOpen: boolean;
   isSoldOut: boolean;
   userWindowOpensAt: string | null;
   selectedSectionId: string | null;
   selectedSeatIds: string[];
   maxSeats: number;
+  zoneQuantity: number;
   confirmationData: ConfirmationData | null;
   seatTimerSecondsLeft: number | null;
   queueToken: string | null;
@@ -89,6 +95,7 @@ export interface BookingContextValue {
   setSeatTimerSecondsLeft: (seconds: number) => void;
   setQueueToken: (token: string | null) => void;
   clearPaymentFailed: () => void;
+  setZoneQuantity: (n: number) => void;
 }
 
 export const BookingContext = createContext<BookingContextValue | null>(null);
@@ -115,6 +122,7 @@ export function BookingProvider({ eventId, children }: BookingProviderProps) {
     seatTimerSecondsLeft,
     queueToken,
     reservationRefs,
+    zoneQuantity,
     setEventLoaded,
     selectDate,
     toggleLeftPanel,
@@ -126,6 +134,7 @@ export function BookingProvider({ eventId, children }: BookingProviderProps) {
     setConfirmationData,
     setSeatTimerSecondsLeft,
     setQueueToken,
+    setZoneQuantity,
   } = useBookingStore();
   const bookingSession = useBookingSession();
 
@@ -289,6 +298,22 @@ export function BookingProvider({ eventId, children }: BookingProviderProps) {
 
   const maxSeats = MAX_SEATS_PER_TIER[userTier];
 
+  const flowType = useMemo<BookingFlowType>(() => {
+    const mockEv = findMockEvent(eventId);
+    return mockEv ? getBookingFlowType(mockEv.category) : "seat-map";
+  }, [eventId]);
+
+  const mockSections = useMemo<Section[]>(() => {
+    const mockEv = findMockEvent(eventId);
+    return (mockEv?.sections ?? []).map((s) => ({
+      id: s.name,
+      name: s.name,
+      price: s.price,
+      totalSeats: s.totalSeats,
+      remainingSeats: s.totalSeats,
+    }));
+  }, [eventId]);
+
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
@@ -387,6 +412,7 @@ export function BookingProvider({ eventId, children }: BookingProviderProps) {
       eventId,
       artistId,
       bookingState,
+      flowType,
       event,
       eventDates,
       selectedDateId,
@@ -396,12 +422,14 @@ export function BookingProvider({ eventId, children }: BookingProviderProps) {
       selectedDate,
       tierWindows,
       sectionsForDate,
+      mockSections,
       isWindowOpen,
       isSoldOut,
       userWindowOpensAt,
       selectedSectionId,
       selectedSeatIds,
       maxSeats,
+      zoneQuantity,
       confirmationData,
       seatTimerSecondsLeft,
       queueToken,
@@ -418,11 +446,13 @@ export function BookingProvider({ eventId, children }: BookingProviderProps) {
       setSeatTimerSecondsLeft: handleSetSeatTimerSecondsLeft,
       setQueueToken,
       clearPaymentFailed,
+      setZoneQuantity,
     }),
     [
       eventId,
       artistId,
       bookingState,
+      flowType,
       eventDates,
       selectedDateId,
       isLeftPanelExpanded,
@@ -438,10 +468,12 @@ export function BookingProvider({ eventId, children }: BookingProviderProps) {
       selectedDate,
       tierWindows,
       sectionsForDate,
+      mockSections,
       isWindowOpen,
       isSoldOut,
       userWindowOpensAt,
       maxSeats,
+      zoneQuantity,
       selectDate,
       toggleLeftPanel,
       setLeftPanel,
@@ -454,6 +486,7 @@ export function BookingProvider({ eventId, children }: BookingProviderProps) {
       handleSetSeatTimerSecondsLeft,
       setQueueToken,
       clearPaymentFailed,
+      setZoneQuantity,
     ],
   );
 

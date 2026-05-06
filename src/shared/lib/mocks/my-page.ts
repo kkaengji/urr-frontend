@@ -74,11 +74,11 @@ const myTickets: (Ticket & { event: Event })[] = [
     event: toEvent(13),
   },
   {
-    id: "my-tk-005", eventId: "3",
+    id: "my-tk-005", eventId: "2",
     section: "A석", row: "15", seatNumber: "3",
     price: 99000, tierFee: 5000, qrCode: "URR-TK-BTS2025-005",
     isTransferable: false, isUpcoming: false,
-    event: toEvent(3),
+    event: toEvent(2),
   },
 ];
 
@@ -94,12 +94,12 @@ const myTransferRecords: (MyTransferRecord & { event: Event })[] = [
     event: toEvent(1),
   },
   {
-    id: "my-tf-002", ticketId: "my-tk-extra-002", eventId: "3",
+    id: "my-tf-002", ticketId: "my-tk-extra-002", eventId: "2",
     role: "seller", counterpartyName: "이팬심",
     price: 110000, faceValue: 99000, platformFee: 5500,
     section: "S석", seatInfo: "B구역 8열 14번",
     status: "completed", createdAt: "2025-10-20T14:30:00+09:00",
-    event: toEvent(3),
+    event: toEvent(2),
   },
   {
     id: "my-tf-003", ticketId: "my-tk-extra-003", eventId: "4",

@@ -28,7 +28,7 @@ function formatEventDate(isoDate: string): string {
 }
 
 export function ConfirmationView() {
-  const { event, selectedDate, userTier, confirmationData, resetBooking } =
+  const { event, selectedDate, userTier, confirmationData, resetBooking, flowType } =
     useBooking();
 
   const { setSidebar } = useLayout();
@@ -118,17 +118,41 @@ export function ConfirmationView() {
 
           <Separator />
 
-          {/* Seats */}
+          {/* Seats / Zone / Grade */}
           <div className="space-y-1.5">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              좌석 정보
+              {flowType === "zone" ? "구역 정보" : "좌석 정보"}
             </p>
-            {confirmationData.tickets.map((ticket, i) => (
-              <p key={i} className="text-sm">
-                {ticket.sectionName} {ticket.row}열 {ticket.seatNumber}번
+            {flowType !== "seat-map" && confirmationData.zoneQuantity ? (
+              <p className="text-sm">
+                {confirmationData.tickets[0]?.sectionName} × {confirmationData.zoneQuantity}매
               </p>
-            ))}
+            ) : (
+              confirmationData.tickets.map((ticket, i) => (
+                <p key={i} className="text-sm">
+                  {ticket.sectionName}{ticket.row ? ` ${ticket.row}열` : ""}{" "}
+                  {ticket.seatNumber}번
+                </p>
+              ))
+            )}
           </div>
+
+          {/* 수령방법 (performance 전용) */}
+          {confirmationData.deliveryMethod && (
+            <>
+              <Separator />
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  수령 방법
+                </p>
+                <p className="text-sm">
+                  {confirmationData.deliveryMethod === "mobile"
+                    ? "모바일 티켓 (앱 내 QR코드)"
+                    : "현장 수령"}
+                </p>
+              </div>
+            </>
+          )}
 
           <Separator />
 

@@ -37,6 +37,7 @@ export function PostCard({
               src={post.authorAvatar}
               alt={post.authorName}
               fill
+              sizes="40px"
               className="object-cover"
             />
           </div>
@@ -104,6 +105,7 @@ export function PostCard({
                 src={src}
                 alt={`${post.authorName} 게시글 이미지 ${idx + 1}`}
                 fill
+                sizes="(max-width: 768px) 100vw, 600px"
                 className="object-cover"
               />
             </div>

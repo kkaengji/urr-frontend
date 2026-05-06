@@ -122,7 +122,7 @@ export function HomeWidget() {
       status: deriveStatus(e.openDate, e.endDate),
       bannerImage: artist?.banner || undefined,
     };
-  });
+  }).filter((b) => !!b.bannerImage);
 
   return (
     <div className="space-y-14">
@@ -232,6 +232,7 @@ export function HomeWidget() {
                           src={event.posterImageUrl}
                           alt={event.eventTitle}
                           fill
+                          sizes="80px"
                           className="object-cover"
                         />
                       </div>

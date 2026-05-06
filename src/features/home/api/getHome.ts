@@ -1,5 +1,6 @@
 import { delay } from "@/shared/lib/mockDelay";
 import { mockEvents } from "@/shared/lib/mocks/events";
+import { mockArtists } from "@/shared/lib/mocks/artists";
 
 export interface HomePopularArtist {
   artistId: number;
@@ -49,56 +50,57 @@ export interface HomeData {
   newArtists: HomePopularArtist[];
 }
 
-const rankingEventIds = [2, 8, 5, 9, 10, 11, 18, 16];
-
-const mockPopularArtists: HomePopularArtist[] = [
-  { artistId: 2, artistName: "BTS",      profileImageUrl: "/artists/2/profile.jpg",  followerCount: 50_000_000, category: "boygroup" },
-  { artistId: 4, artistName: "IVE",      profileImageUrl: "/artists/4/profile.jpg",  followerCount: 15_000_000, category: "girlgroup" },
-  { artistId: 3, artistName: "aespa",    profileImageUrl: "/artists/3/profile.jpg",  followerCount: 12_000_000, category: "girlgroup" },
-  { artistId: 1, artistName: "IU",       profileImageUrl: "/artists/1/profile.jpg",  followerCount: 7_800_000,  category: "solo" },
-  { artistId: 6, artistName: "DAY6",     profileImageUrl: "/artists/6/profile.jpg",  followerCount: 5_000_000,  category: "boygroup" },
-  { artistId: 5, artistName: "LUCY",     profileImageUrl: "/artists/5/profile.jpg",  followerCount: 800_000,    category: "boygroup" },
-  { artistId: 7, artistName: "KiiiKiii", profileImageUrl: "/artists/7/profile.jpg",  followerCount: 800_000,    category: "girlgroup" },
-];
-
-const trendingEventIds = [2, 11, 5, 9, 1, 4, 8, 12, 13, 3];
+function shuffle<T>(arr: T[]): T[] {
+  const out = [...arr];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
 
 export async function getHome(): Promise<HomeData> {
   await delay(400);
 
-  const popularEventRanking: HomeRankingEvent[] = rankingEventIds
-    .flatMap((id, i) => {
-      const e = mockEvents.find((ev) => ev.eventId === id);
-      if (!e) return [];
-      return [{
-        rank: i + 1,
-        eventId: e.eventId,
-        eventTitle: e.title,
-        artistId: e.artistId,
-        artistName: e.artistName,
-        posterImageUrl: e.posterImageUrl,
-        openDate: e.openDate,
-        endDate: e.endDate,
-      }];
-    });
+  const today = new Date().toISOString().split("T")[0];
+  const activeEvents = mockEvents.filter(
+    (e) => e.active && (!e.endDate || e.endDate >= today),
+  );
 
-  const trendingEvents: HomeTrendingEvent[] = trendingEventIds
-    .flatMap((id) => {
-      const e = mockEvents.find((ev) => ev.eventId === id);
-      if (!e) return [];
-      return [{
-        eventId: e.eventId,
-        eventTitle: e.title,
-        artistId: e.artistId,
-        artistName: e.artistName,
-        posterImageUrl: e.posterImageUrl,
-        venueAddress: e.venueName,
-        openDate: e.openDate,
-        endDate: e.endDate,
-      }];
-    });
+  const shuffledForTrending = shuffle(activeEvents);
+  const shuffledForRanking = shuffle(activeEvents);
 
-  const presaleOpeningSoon: HomePresaleEvent[] = mockEvents
+  const trendingEvents: HomeTrendingEvent[] = shuffledForTrending.slice(0, 10).map((e) => ({
+    eventId: e.eventId,
+    eventTitle: e.title,
+    artistId: e.artistId,
+    artistName: e.artistName,
+    posterImageUrl: e.posterImageUrl,
+    venueAddress: e.venueName,
+    openDate: e.openDate,
+    endDate: e.endDate,
+  }));
+
+  const popularEventRanking: HomeRankingEvent[] = shuffledForRanking.slice(0, 8).map((e, i) => ({
+    rank: i + 1,
+    eventId: e.eventId,
+    eventTitle: e.title,
+    artistId: e.artistId,
+    artistName: e.artistName,
+    posterImageUrl: e.posterImageUrl,
+    openDate: e.openDate,
+    endDate: e.endDate,
+  }));
+
+  const popularArtists: HomePopularArtist[] = shuffle(mockArtists).slice(0, 10).map((a) => ({
+    artistId: a.id,
+    artistName: a.name,
+    profileImageUrl: a.profileImageUrl,
+    followerCount: a.followerCount ?? 0,
+    category: a.category ?? "solo",
+  }));
+
+  const presaleOpeningSoon: HomePresaleEvent[] = activeEvents
     .filter((e) => e.presaleShowId !== undefined && e.presaleSaleOpenAt !== undefined)
     .map((e) => ({
       showId: e.presaleShowId!,
@@ -112,7 +114,7 @@ export async function getHome(): Promise<HomeData> {
 
   return {
     popularEventRanking,
-    popularArtists: mockPopularArtists,
+    popularArtists,
     trendingEvents,
     presaleOpeningSoon,
     newArtists: [],

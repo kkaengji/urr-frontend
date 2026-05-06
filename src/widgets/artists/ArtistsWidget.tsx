@@ -101,6 +101,7 @@ export function ArtistsWidget() {
                       src={artist.avatar}
                       alt={artist.name}
                       fill
+                      sizes="125px"
                       className="object-cover group-hover:scale-105 transition-transform duration-200"
                     />
                   ) : (
@@ -154,6 +155,7 @@ export function ArtistsWidget() {
                     src={card.profileImage}
                     alt={card.name}
                     fill
+                    sizes="110px"
                     className="object-cover"
                   />
                 </div>

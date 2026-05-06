@@ -23,6 +23,7 @@ export function ArtistCard({ artist, selected = false, className }: ArtistCardPr
             src={artist.avatar}
             alt={artist.name}
             fill
+            sizes="48px"
             className="object-cover"
           />
         ) : (

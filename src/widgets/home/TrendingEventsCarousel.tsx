@@ -67,6 +67,7 @@ export function TrendingEventsCarousel({ events }: TrendingEventsCarouselProps) 
                     src={event.posterImageUrl}
                     alt={event.eventTitle}
                     fill
+                    sizes="(max-width: 1200px) 16vw, 200px"
                     className="object-cover"
                   />
                 ) : (

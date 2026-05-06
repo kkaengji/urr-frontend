@@ -35,6 +35,7 @@ export function ArtistHeader({
           src={artist.banner}
           alt={artist.name}
           fill
+          sizes="calc(100vw - 220px)"
           className="object-cover"
           priority
         />

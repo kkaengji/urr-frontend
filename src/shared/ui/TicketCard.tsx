@@ -31,7 +31,7 @@ export function TicketCard({ ticket, variant = 'upcoming', isListed, onViewQR, o
     )}>
       <div className="w-[80px] h-[112px] rounded-lg bg-muted shrink-0 overflow-hidden relative">
         {ticket.event.poster ? (
-          <Image src={ticket.event.poster} alt={ticket.event.title} fill className="object-cover" />
+          <Image src={ticket.event.poster} alt={ticket.event.title} fill sizes="80px" className="object-cover" />
         ) : (
           <div
             className="absolute inset-0 flex items-center justify-center text-white text-xs font-medium"

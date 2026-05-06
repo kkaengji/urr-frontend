@@ -74,6 +74,7 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
                 src={banner.bannerImage}
                 alt={banner.title}
                 fill
+                sizes="100vw"
                 className="object-cover"
                 priority={index === 0}
                 loading={index === 0 ? "eager" : "lazy"}

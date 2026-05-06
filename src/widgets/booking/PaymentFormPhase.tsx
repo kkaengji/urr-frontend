@@ -24,6 +24,10 @@ interface PaymentFormPhaseProps {
   selectedMethod: PaymentMethod;
   termsAgreed: boolean;
   isFormValid: boolean;
+  // 수령방법 (performance 전용)
+  showDeliveryMethod?: boolean;
+  deliveryMethod?: "mobile" | "onsite";
+  onDeliveryMethodChange?: (method: "mobile" | "onsite") => void;
   // Handlers
   onBack: () => void;
   onNameChange: (value: string) => void;
@@ -46,6 +50,9 @@ export function PaymentFormPhase({
   selectedMethod,
   termsAgreed,
   isFormValid,
+  showDeliveryMethod,
+  deliveryMethod,
+  onDeliveryMethodChange,
   onBack,
   onNameChange,
   onPhoneChange,
@@ -108,6 +115,40 @@ export function PaymentFormPhase({
                   </div>
                 </div>
               </div>
+
+              {showDeliveryMethod && (
+                <>
+                  <Separator />
+                  <div>
+                    <h3 className="text-sm font-bold mb-3">수령 방법</h3>
+                    <div className="space-y-2">
+                      {(["mobile", "onsite"] as const).map((method) => (
+                        <label
+                          key={method}
+                          className={cn(
+                            "flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer transition-all",
+                            deliveryMethod === method
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:bg-muted/50",
+                          )}
+                        >
+                          <input
+                            type="radio"
+                            name="deliveryMethod"
+                            value={method}
+                            checked={deliveryMethod === method}
+                            onChange={() => onDeliveryMethodChange?.(method)}
+                            className="accent-primary"
+                          />
+                          <span className="text-sm font-medium">
+                            {method === "mobile" ? "모바일 티켓 (앱 내 QR코드)" : "현장 수령"}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
 
               <Separator />
 

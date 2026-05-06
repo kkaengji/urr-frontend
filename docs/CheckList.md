@@ -53,39 +53,40 @@
 | `performance` | musical, etc | 회차 달력 → 등급 선택 → 결제 |
 
 ### Phase 1 — 공통 유틸
-- [ ] `BookingFlowType` 타입 추가 (`src/shared/types/index.ts`)
-- [ ] `getBookingFlowType(category)` 유틸 작성 (`src/features/booking/model/bookingFlowUtils.ts`)
-- [ ] `BookingContext`에 `flowType` 노출 (`src/features/booking/model/BookingContext.tsx`)
+- [x] `BookingFlowType` 타입 추가 (`src/shared/types/index.ts`)
+- [x] `getBookingFlowType(category)` 유틸 작성 (`src/features/booking/model/bookingFlowUtils.ts`)
+- [x] `BookingContext`에 `flowType` 노출 (`src/features/booking/model/BookingContext.tsx`)
 
 ### Phase 2 — 페스티벌 구역 선택형 (`zone`)
-- [ ] `ZoneCard.tsx` 작성 (`src/widgets/booking/`)
-- [ ] `ZoneSelectView.tsx` 작성 (`src/widgets/booking/`)
-- [ ] `RightMain.tsx` — `zone` 분기 추가
-- [ ] `useBookingStore` — zone 선택 후 `payment` 직행 전이
-- [ ] PEAK FESTIVAL (event 8) mock에 zone 구조 추가
+- [x] `ZoneCard.tsx` 작성 (`src/widgets/booking/`)
+- [x] `ZoneSelectView.tsx` 작성 (`src/widgets/booking/`)
+- [x] `RightMain.tsx` — `zone` 분기 추가
+- [x] `useBookingStore` — zone 선택 후 `payment` 직행 전이
+- [x] PEAK FESTIVAL (eventId 18) / Weverse Con (10) / 서울파크뮤직 (11) mock에 shows 추가
 
 ### Phase 3 — 뮤지컬/전시 회차 선택형 (`performance`)
-- [ ] `PerformanceScheduleView.tsx` 작성 (`src/widgets/booking/`)
-- [ ] `GradePicker.tsx` 작성 (`src/widgets/booking/`)
-- [ ] `RightMain.tsx` — `performance` 분기 추가
-- [ ] `LeftPanel.tsx` — musical/etc 날짜 선택기 조건부 숨김
-- [ ] 킹키부츠(event 4), 김종욱찾기(event 6), 아라리오뮤지엄(event 7) mock에 회차·등급 구조 추가
+- [x] `PerformanceScheduleView.tsx` 작성 (`src/widgets/booking/`)
+- [x] `GradePicker.tsx` 작성 (`src/widgets/booking/`)
+- [x] `RightMain.tsx` — `performance` 분기 추가
+- [x] `LeftPanel.tsx` — musical/etc 날짜 선택기 조건부 숨김
+- [x] 킹키부츠(14), 김종욱찾기(16), 아라리오뮤지엄(17) mock에 회차·등급 구조 추가
 
 ### Phase 4 — 결제 플로우 변형
-- [ ] `PaymentView.tsx` — `performance` 타입 수령 방법 선택 추가 (모바일티켓 / 현장수령)
-- [ ] `ConfirmationView.tsx` — 수령 방법 표시 분기
+- [x] `PaymentView.tsx` — `performance` 타입 수령 방법 선택 추가 (모바일티켓 / 현장수령)
+- [x] `ConfirmationView.tsx` — 수령 방법 표시 분기
+- [x] 데모 모드: Toss 키 없을 시 결제 없이 confirmation으로 바로 전이
 
 ### Phase 5 — 검증
-- [ ] concert 플로우: event 1 (Weverse Con) 전체 흐름 확인
-- [ ] festival 플로우: event 8 (PEAK FESTIVAL) 전체 흐름 확인
-- [ ] musical 플로우: event 4 (킹키부츠) 전체 흐름 확인
-- [ ] etc 플로우: event 7 (아라리오뮤지엄) 전체 흐름 확인
+- [ ] concert 플로우: event 1 (IU Golden Hour) 전체 흐름 확인
+- [ ] festival 플로우: event 18 (PEAK FESTIVAL) 전체 흐름 확인
+- [ ] musical 플로우: event 14 (킹키부츠) 전체 흐름 확인
+- [ ] etc 플로우: event 17 (아라리오뮤지엄) 전체 흐름 확인
 
 ---
 
 ## 4. 배포 준비
 
-- [ ] `npm run build` 오류 없음 확인
+- [x] `npm run build` 오류 없음 확인
 - [ ] Vercel 배포 및 도메인 설정
 - [ ] README `docs/screenshots/` 스크린샷 추가
 - [ ] README 데모 URL 업데이트

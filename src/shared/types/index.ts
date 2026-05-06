@@ -1,6 +1,7 @@
 // === Enums & Literals ===
 
 export type TierLevel = "LIGHTNING" | "THUNDER" | "CLOUD" | "MIST";
+export type BookingFlowType = "seat-map" | "zone" | "performance";
 export type BookingStatus = "open" | "upcoming" | "soldout" | "closed";
 export type TransferStatus = "listed" | "sold" | "completed" | "cancelled";
 export type SeatStatus = "available" | "selected" | "taken" | "locked";
@@ -186,6 +187,9 @@ export interface ConfirmationData {
   eventVenue?: string;
   showDate?: string;
   userTier?: TierLevel;
+  flowType?: BookingFlowType;
+  zoneQuantity?: number;
+  deliveryMethod?: "mobile" | "onsite";
 }
 // === Label Constants ===
 

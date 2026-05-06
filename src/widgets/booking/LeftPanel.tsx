@@ -90,6 +90,7 @@ export function LeftPanel() {
     userTier,
     isWindowOpen,
     userWindowOpensAt,
+    flowType,
     selectDate,
     toggleLeftPanel,
     startBooking,
@@ -115,18 +116,28 @@ export function LeftPanel() {
       {isLeftPanelExpanded && (
         <>
           <div className="flex items-center gap-2 px-4 h-12 border-b border-border shrink-0">
-            <select
-              value={selectedDateId ?? ""}
-              onChange={(e) => selectDate(e.target.value)}
-              className="flex-1 min-w-0 h-8 px-2.5 rounded-md border border-border bg-white text-sm font-medium focus:outline-none focus:ring-1 focus:ring-ring transition-colors truncate cursor-pointer"
-            >
-              {event?.dates.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {formatEventDateTime(d.date)} — 잔여{" "}
-                  {d.remainingSeats.toLocaleString()}석
-                </option>
-              ))}
-            </select>
+            {flowType !== "performance" ? (
+              <select
+                value={selectedDateId ?? ""}
+                onChange={(e) => selectDate(e.target.value)}
+                className="flex-1 min-w-0 h-8 px-2.5 rounded-md border border-border bg-white text-sm font-medium focus:outline-none focus:ring-1 focus:ring-ring transition-colors truncate cursor-pointer"
+              >
+                {event?.dates.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {formatEventDateTime(d.date)} — 잔여{" "}
+                    {d.remainingSeats.toLocaleString()}석
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <span className="flex-1 text-sm text-muted-foreground truncate">
+                {bookingState === "seats-section"
+                  ? "회차를 선택하세요"
+                  : bookingState === "seats-individual"
+                  ? "등급을 선택하세요"
+                  : event?.title ?? "공연 정보"}
+              </span>
+            )}
             <button
               onClick={toggleLeftPanel}
               className="p-1.5 rounded-md hover:bg-accent transition-colors shrink-0"
@@ -147,6 +158,7 @@ export function LeftPanel() {
                       src={event.poster}
                       alt={event.title}
                       fill
+                      sizes="360px"
                       className="object-cover"
                     />
                   ) : (

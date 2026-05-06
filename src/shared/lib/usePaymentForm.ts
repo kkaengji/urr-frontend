@@ -15,7 +15,7 @@ export function usePaymentForm({ initialName = '', initialPhone = '' }: UsePayme
   const [nameOverride, setNameOverride] = useState<string | null>(null)
   const [phoneOverride, setPhoneOverride] = useState<string | null>(null)
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>('card')
-  const [termsAgreed, setTermsAgreed] = useState(false)
+  const [termsAgreed, setTermsAgreed] = useState(true)
 
   const buyerName = nameOverride ?? initialName
   const buyerPhone = phoneOverride ?? (initialPhone ? formatPhone(initialPhone) : '')
@@ -41,7 +41,7 @@ export function usePaymentForm({ initialName = '', initialPhone = '' }: UsePayme
     setNameOverride(null)
     setPhoneOverride(null)
     setSelectedMethod('card')
-    setTermsAgreed(false)
+    setTermsAgreed(true)
   }, [])
 
   return {

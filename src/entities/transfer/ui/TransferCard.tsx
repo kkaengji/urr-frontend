@@ -33,6 +33,7 @@ export function TransferCard({ listing, onClick, className }: TransferCardProps)
               src={listing.event.poster}
               alt={listing.event.title}
               fill
+              sizes="48px"
               className="object-cover"
             />
           ) : (

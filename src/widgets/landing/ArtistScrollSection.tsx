@@ -140,6 +140,7 @@ export function ArtistScrollSection() {
                   src={artist.avatar}
                   alt={artist.name}
                   fill
+                  sizes="172px"
                   style={{ objectFit: "cover" }}
                   unoptimized
                 />
