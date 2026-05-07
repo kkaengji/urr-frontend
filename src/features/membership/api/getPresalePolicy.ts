@@ -1,4 +1,13 @@
 import { delay } from "@/shared/lib/mockDelay";
+
+function todayKSTAt(hour: number, offsetDays = 0): string {
+  const kst = new Date(Date.now() + 9 * 60 * 60 * 1000);
+  const base = new Date(Date.UTC(kst.getUTCFullYear(), kst.getUTCMonth(), kst.getUTCDate() + offsetDays));
+  const y = base.getUTCFullYear();
+  const mo = String(base.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(base.getUTCDate()).padStart(2, "0");
+  return `${y}-${mo}-${d}T${String(hour).padStart(2, "0")}:00:00+09:00`;
+}
 import type { TierLevel } from "@/shared/types";
 
 export interface PresaleTierPolicy {
@@ -16,7 +25,7 @@ export interface PresalePolicy {
 }
 
 const tiersByEvent: Record<number, PresaleTierPolicy[]> = {
-  1: [ // IU 2026 콘서트 〈The Golden Hour〉
+  1: [ // 2026 IU HEREH WORLD TOUR CONCERT ENCORE：THE WINNING
     { tier: "LIGHTNING", openAt: "2026-08-11T20:00:00+09:00", presaleOffsetMinutes: 0,    bookingFeeWon: 0    },
     { tier: "THUNDER",   openAt: "2026-08-11T21:00:00+09:00", presaleOffsetMinutes: 60,   bookingFeeWon: 3000 },
     { tier: "CLOUD",     openAt: "2026-08-13T20:00:00+09:00", presaleOffsetMinutes: 2820, bookingFeeWon: 5000 },
@@ -120,11 +129,21 @@ export async function getPresalePolicy(
   showId: string | number,
 ): Promise<PresalePolicy> {
   await delay(300);
-  const tiers = tiersByEvent[Number(eventId)] ?? defaultTiers;
+  const id = Number(eventId);
+
+  const tiers: PresaleTierPolicy[] = id === 1
+    ? [
+        { tier: "LIGHTNING", openAt: todayKSTAt(20),    presaleOffsetMinutes: 0,    bookingFeeWon: 0    },
+        { tier: "THUNDER",   openAt: todayKSTAt(21),    presaleOffsetMinutes: 60,   bookingFeeWon: 3000 },
+        { tier: "CLOUD",     openAt: todayKSTAt(20, 2), presaleOffsetMinutes: 2820, bookingFeeWon: 5000 },
+        { tier: "MIST",      openAt: todayKSTAt(21, 2), presaleOffsetMinutes: 60,   bookingFeeWon: 8000 },
+      ]
+    : (tiersByEvent[id] ?? defaultTiers);
+
   return {
-    eventId: Number(eventId),
+    eventId: id,
     showId: Number(showId),
-    generalOpenAt: tiers[tiers.length - 1]?.openAt ?? defaultTiers[defaultTiers.length - 1].openAt,
+    generalOpenAt: tiers[tiers.length - 1].openAt,
     tiers,
   };
 }

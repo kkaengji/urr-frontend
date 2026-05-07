@@ -7,9 +7,10 @@ interface ArtistCardProps {
   artist: Artist;
   selected?: boolean;
   className?: string;
+  priority?: boolean;
 }
 
-export function ArtistCard({ artist, selected = false, className }: ArtistCardProps) {
+export function ArtistCard({ artist, selected = false, className, priority = false }: ArtistCardProps) {
   return (
     <div className={cn("flex flex-col items-center gap-1.5 rounded-lg transition-colors", className)}>
       <div
@@ -25,6 +26,7 @@ export function ArtistCard({ artist, selected = false, className }: ArtistCardPr
             fill
             sizes="48px"
             className="object-cover"
+            priority={priority}
           />
         ) : (
           <div className="w-full h-full bg-accent flex items-center justify-center text-sm font-semibold text-muted-foreground">

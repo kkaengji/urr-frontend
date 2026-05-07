@@ -89,7 +89,7 @@ export function ArtistsWidget() {
           </div>
         ) : (
           <ScrollableRow className="flex gap-3">
-            {artists.map((artist) => (
+            {artists.map((artist, i) => (
               <Link
                 key={artist.id}
                 href={`/artists/${artist.id}`}
@@ -103,6 +103,7 @@ export function ArtistsWidget() {
                       fill
                       sizes="125px"
                       className="object-cover group-hover:scale-105 transition-transform duration-200"
+                      priority={i === 0}
                     />
                   ) : (
                     <div
@@ -136,7 +137,7 @@ export function ArtistsWidget() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold">주목할 만한 NEW 아티스트</h2>
         <ScrollableRow className="flex gap-4">
-          {newArtistCards.map((card) => (
+          {newArtistCards.map((card, i) => (
             <div
               key={card.id}
               className="rounded-xl bg-[#F5F4F3] hover:bg-[#F0EFED] transition-colors px-5 pt-3 pb-4 flex flex-col shrink-0 w-110"
@@ -157,6 +158,7 @@ export function ArtistsWidget() {
                     fill
                     sizes="110px"
                     className="object-cover"
+                    priority={i === 0}
                   />
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col h-27.5">

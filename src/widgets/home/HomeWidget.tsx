@@ -149,12 +149,13 @@ export function HomeWidget() {
           linkLabel="아티스트 더보기"
         />
         <div className="grid grid-cols-10 gap-2">
-          {popularArtists.map((artist) => (
+          {popularArtists.map((artist, i) => (
             <Link key={artist.id} href={`/artists/${artist.id}`}>
               <ArtistCard
                 artist={artist}
                 selected={false}
                 className="w-full border-0 bg-transparent p-2 hover:bg-[#F3F2F0]"
+                priority={i === 0}
               />
             </Link>
           ))}

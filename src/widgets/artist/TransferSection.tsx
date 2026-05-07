@@ -46,7 +46,11 @@ export function TransferSection({
         listedTransfers.length > 0 ? (
           <div className="grid grid-cols-3 gap-4">
             {listedTransfers.slice(0, 3).map((listing) => (
-              <TransferCard key={listing.id} listing={listing} />
+              <TransferCard
+                key={listing.id}
+                listing={listing}
+                onClick={() => router.push(`/transfer/${artist.id}/${listing.id}`)}
+              />
             ))}
           </div>
         ) : (

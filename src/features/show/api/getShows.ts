@@ -1,5 +1,14 @@
 import { delay } from "@/shared/lib/mockDelay";
 
+function todayKSTAt(hour: number, offsetDays = 0): string {
+  const kst = new Date(Date.now() + 9 * 60 * 60 * 1000);
+  const base = new Date(Date.UTC(kst.getUTCFullYear(), kst.getUTCMonth(), kst.getUTCDate() + offsetDays));
+  const y = base.getUTCFullYear();
+  const mo = String(base.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(base.getUTCDate()).padStart(2, "0");
+  return `${y}-${mo}-${d}T${String(hour).padStart(2, "0")}:00:00+09:00`;
+}
+
 export type ShowStatus = "DRAFT" | "ON_SALE" | "OPEN" | "CLOSED" | "CANCELLED";
 export type BookingWindowTier = "LIGHTNING" | "THUNDER" | "CLOUD" | "MIST";
 
@@ -180,5 +189,32 @@ function generateShows(eventId: number): ShowSummary[] {
 
 export async function getShows(eventId: string | number): Promise<ShowSummary[]> {
   await delay(350);
-  return showsByEvent[Number(eventId)] ?? generateShows(Number(eventId));
+  const id = Number(eventId);
+
+  if (id === 1) {
+    const iuBookingWindowsToday: BookingWindow[] = [
+      { tier: "LIGHTNING", opensAt: todayKSTAt(20),    fee: 0    },
+      { tier: "THUNDER",   opensAt: todayKSTAt(21),    fee: 3000 },
+      { tier: "CLOUD",     opensAt: todayKSTAt(20, 2), fee: 5000 },
+      { tier: "MIST",      opensAt: todayKSTAt(21, 2), fee: 8000 },
+    ];
+    return [
+      {
+        showId: 101, sessionNo: 1,
+        startAt: "2026-09-21T19:00:00+09:00", endAt: "2026-09-21T21:30:00+09:00",
+        capacity: 66000, remainingSeats: 3200,
+        saleOpenAt: todayKSTAt(20), saleCloseAt: "2026-09-21T18:00:00+09:00",
+        bookingWindows: iuBookingWindowsToday, status: "ON_SALE", active: true, seatmapVersion: 1,
+      },
+      {
+        showId: 102, sessionNo: 2,
+        startAt: "2026-09-22T19:00:00+09:00", endAt: "2026-09-22T21:30:00+09:00",
+        capacity: 66000, remainingSeats: 8500,
+        saleOpenAt: todayKSTAt(20), saleCloseAt: "2026-09-22T18:00:00+09:00",
+        bookingWindows: iuBookingWindowsToday, status: "ON_SALE", active: true, seatmapVersion: 1,
+      },
+    ];
+  }
+
+  return showsByEvent[id] ?? generateShows(id);
 }
