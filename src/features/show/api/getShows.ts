@@ -193,24 +193,24 @@ export async function getShows(eventId: string | number): Promise<ShowSummary[]>
 
   if (id === 1) {
     const iuBookingWindowsToday: BookingWindow[] = [
-      { tier: "LIGHTNING", opensAt: todayKSTAt(20),    fee: 0    },
-      { tier: "THUNDER",   opensAt: todayKSTAt(21),    fee: 3000 },
-      { tier: "CLOUD",     opensAt: todayKSTAt(20, 2), fee: 5000 },
-      { tier: "MIST",      opensAt: todayKSTAt(21, 2), fee: 8000 },
+      { tier: "LIGHTNING", opensAt: todayKSTAt(10, -1), fee: 0    },
+      { tier: "THUNDER",   opensAt: todayKSTAt(11, -1), fee: 3000 },
+      { tier: "CLOUD",     opensAt: todayKSTAt(10, -1), fee: 5000 },
+      { tier: "MIST",      opensAt: todayKSTAt(11, -1), fee: 8000 },
     ];
     return [
       {
         showId: 101, sessionNo: 1,
         startAt: "2026-09-21T19:00:00+09:00", endAt: "2026-09-21T21:30:00+09:00",
         capacity: 66000, remainingSeats: 3200,
-        saleOpenAt: todayKSTAt(20), saleCloseAt: "2026-09-21T18:00:00+09:00",
+        saleOpenAt: todayKSTAt(0, -1), saleCloseAt: "2026-09-21T18:00:00+09:00",
         bookingWindows: iuBookingWindowsToday, status: "ON_SALE", active: true, seatmapVersion: 1,
       },
       {
         showId: 102, sessionNo: 2,
         startAt: "2026-09-22T19:00:00+09:00", endAt: "2026-09-22T21:30:00+09:00",
         capacity: 66000, remainingSeats: 8500,
-        saleOpenAt: todayKSTAt(20), saleCloseAt: "2026-09-22T18:00:00+09:00",
+        saleOpenAt: todayKSTAt(0, -1), saleCloseAt: "2026-09-22T18:00:00+09:00",
         bookingWindows: iuBookingWindowsToday, status: "ON_SALE", active: true, seatmapVersion: 1,
       },
     ];

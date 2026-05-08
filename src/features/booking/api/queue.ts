@@ -66,16 +66,16 @@ export interface QueuePollData {
   remainMs: number | null;
 }
 
-let _rank = 8;
+let _rank = 4;
 
 export async function checkQueue(showId: string | number): Promise<QueueEntryData> {
-  await delay(400);
-  _rank = 8;
-  return { userId: 1, showId: Number(showId), status: "WAIT", rank: _rank, total: 1200, waitTime: 80 };
+  await delay(200);
+  _rank = 4;
+  return { userId: 1, showId: Number(showId), status: "WAIT", rank: _rank, total: 1200, waitTime: 40 };
 }
 
 export async function pollQueue(showId: string | number): Promise<QueuePollData> {
-  await delay(2000);
+  await delay(300);
   _rank = Math.max(0, _rank - (Math.floor(Math.random() * 3) + 2));
   if (_rank <= 0) {
     return {

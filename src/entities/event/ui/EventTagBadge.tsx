@@ -1,12 +1,13 @@
 import { cn } from "@/shared/lib/utils";
 
-export type EventTag = "HOT" | "NEW" | "PRE_SALE" | "TRANSFER_AVAILABLE";
+export type EventTag = "HOT" | "NEW" | "PRE_SALE" | "TRANSFER_AVAILABLE" | "DEMO";
 
 const tagConfig: Record<EventTag, { label: string; className: string }> = {
   HOT: { label: "HOT", className: "bg-destructive/10 text-destructive" },
   NEW: { label: "NEW", className: "bg-secondary/10 text-secondary" },
   PRE_SALE: { label: "선예매", className: "bg-booking-upcoming/10 text-booking-upcoming" },
   TRANSFER_AVAILABLE: { label: "양도가능", className: "bg-success/10 text-success" },
+  DEMO: { label: "데모공연", className: "bg-primary/10 text-primary border border-primary/30" },
 };
 
 interface EventTagBadgeProps {

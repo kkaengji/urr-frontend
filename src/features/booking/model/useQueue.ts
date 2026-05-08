@@ -170,13 +170,13 @@ export function useQueue(
           setPosition(data.rank ?? position);
           setTotalInQueue(data.total ?? totalInQueue);
           setWaitTimeSec(data.waitTime ?? null);
-          tier2PollTimerRef.current = setTimeout(poll, 3000);
+          tier2PollTimerRef.current = setTimeout(poll, 800);
         }
       } catch {
         setError("poll-failed");
       }
     };
-    tier2PollTimerRef.current = setTimeout(poll, 3000);
+    tier2PollTimerRef.current = setTimeout(poll, 800);
   }
 
   function retryEntry() {

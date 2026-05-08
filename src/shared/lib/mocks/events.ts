@@ -121,10 +121,10 @@ export const mockEvents: MockEvent[] = [
     description: "승리를 위해 달려온 여정의 마지막 챕터. 아이유 HEREH 월드투어 콘서트 앙코르.",
     posterImageUrl: "/artists/1/events/poster2.jpg",
     detailInfoImageUrl: "/artists/1/events/detail-info2.jpg",
-    venueName: "서울월드컵경기장(상암)", venueAddress: "서울특별시 마포구 월드컵로 240",
+    venueName: "KSPO DOME", venueAddress: "서울특별시 송파구 올림픽로 424",
     venueTemplateId: 1,
-    openDate: todayKSTAt(20).slice(0, 10), endDate: "2099-12-31", active: true,
-    category: "concert", tags: ["단독판매", "인증예매"],
+    openDate: todayKSTAt(0, -1).slice(0, 10), endDate: "2099-12-31", active: true,
+    category: "concert", tags: ["단독판매", "인증예매", "DEMO"],
     runtime: "150분", ageRating: "미취학아동 입장 불가",
     castInfo: "IU (아이유)",
     notices: [
@@ -151,11 +151,11 @@ export const mockEvents: MockEvent[] = [
     ],
     organizer: iuOrganizer,
     shows: [
-      { id: "iu-d1", date: "2026-09-21T19:00:00+09:00", totalSeats: 66000, remainingSeats: 3200 },
-      { id: "iu-d2", date: "2026-09-22T19:00:00+09:00", totalSeats: 66000, remainingSeats: 8500 },
+      { id: "iu-d1", date: todayKSTAt(19, 7), totalSeats: 66000, remainingSeats: 3200 },
+      { id: "iu-d2", date: todayKSTAt(19, 8), totalSeats: 66000, remainingSeats: 8500 },
     ],
     presaleShowId: 101,
-    presaleSaleOpenAt: todayKSTAt(20),
+    presaleSaleOpenAt: todayKSTAt(0, -1),
   },
   {
     eventId: 2, artistId: 2, artistName: "BTS",
