@@ -193,8 +193,8 @@ export async function getShows(eventId: string | number): Promise<ShowSummary[]>
 
   if (id === 1) {
     const iuBookingWindowsToday: BookingWindow[] = [
-      { tier: "LIGHTNING", opensAt: todayKSTAt(10, -1), fee: 0    },
-      { tier: "THUNDER",   opensAt: todayKSTAt(11, -1), fee: 3000 },
+      { tier: "LIGHTNING", opensAt: todayKSTAt(10, -2), fee: 0    },
+      { tier: "THUNDER",   opensAt: todayKSTAt(11, -2), fee: 3000 },
       { tier: "CLOUD",     opensAt: todayKSTAt(10, -1), fee: 5000 },
       { tier: "MIST",      opensAt: todayKSTAt(11, -1), fee: 8000 },
     ];

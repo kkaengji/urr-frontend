@@ -133,10 +133,10 @@ export async function getPresalePolicy(
 
   const tiers: PresaleTierPolicy[] = id === 1
     ? [
-        { tier: "LIGHTNING", openAt: todayKSTAt(20),    presaleOffsetMinutes: 0,    bookingFeeWon: 0    },
-        { tier: "THUNDER",   openAt: todayKSTAt(21),    presaleOffsetMinutes: 60,   bookingFeeWon: 3000 },
-        { tier: "CLOUD",     openAt: todayKSTAt(20, 2), presaleOffsetMinutes: 2820, bookingFeeWon: 5000 },
-        { tier: "MIST",      openAt: todayKSTAt(21, 2), presaleOffsetMinutes: 60,   bookingFeeWon: 8000 },
+        { tier: "LIGHTNING", openAt: todayKSTAt(10, -2), presaleOffsetMinutes: 0,    bookingFeeWon: 0    },
+        { tier: "THUNDER",   openAt: todayKSTAt(11, -2), presaleOffsetMinutes: 60,   bookingFeeWon: 3000 },
+        { tier: "CLOUD",     openAt: todayKSTAt(10, -1), presaleOffsetMinutes: 2820, bookingFeeWon: 5000 },
+        { tier: "MIST",      openAt: todayKSTAt(11, -1), presaleOffsetMinutes: 60,   bookingFeeWon: 8000 },
       ]
     : (tiersByEvent[id] ?? defaultTiers);
 
