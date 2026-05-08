@@ -1,17 +1,28 @@
-import { fetchWithAuth } from "@/shared/api";
-import type { ApiBaseResponse, AuthResponseData } from "../model/types";
+import { delay } from "@/shared/lib/mockDelay";
+import type { AuthResponseData } from "../model/types";
 
 export async function naverLogin(
-  code: string,
-  redirectUri: string,
+  _code: string,
+  _redirectUri: string,
 ): Promise<AuthResponseData> {
-  const res = await fetchWithAuth<ApiBaseResponse<AuthResponseData>>(
-    "/auth/oauth/naver",
-    {
-      method: "POST",
-      body: { code, redirectUri },
-      service: "users",
+  await delay(800);
+  return {
+    tokens: {
+      accessToken: "mock-access-token",
+      tokenType: "Bearer",
+      expiresInSeconds: 3600,
     },
-  );
-  return res.data.data;
+    user: {
+      userId: 1,
+      email: "naver@urr.kr",
+      nickname: "김우르",
+      role: "USER",
+      onboardingCompleted: true,
+      marketingConsent: true,
+      pushConsent: true,
+      smsConsent: false,
+    },
+    onboardingRequired: false,
+    nextPath: "/",
+  };
 }
