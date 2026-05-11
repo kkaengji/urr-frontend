@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { Minus, Plus } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Separator } from "@/shared/ui/separator";
@@ -18,12 +19,21 @@ export function ZoneSelectView() {
   } = useBooking();
 
   const maxQty = 4;
-  const selectedSection = mockSections.find((s) => s.id === selectedSectionId) ?? null;
+  const selectedSection =
+    mockSections.find((s) => s.id === selectedSectionId) ?? null;
 
-  const handleConfirm = () => {
+  const handleSelectSection = useCallback(
+    (sectionId: string) => {
+      selectSection(sectionId);
+      setZoneQuantity(1);
+    },
+    [selectSection, setZoneQuantity],
+  );
+
+  const handleConfirm = useCallback(() => {
     if (!selectedSection) return;
     transitionTo("payment");
-  };
+  }, [selectedSection, transitionTo]);
 
   return (
     <div className="flex flex-col h-full">
@@ -37,10 +47,7 @@ export function ZoneSelectView() {
               key={section.id}
               section={section}
               isSelected={selectedSectionId === section.id}
-              onSelect={() => {
-                selectSection(section.id);
-                setZoneQuantity(1);
-              }}
+              onSelect={() => handleSelectSection(section.id)}
             />
           ))}
         </div>
@@ -49,7 +56,9 @@ export function ZoneSelectView() {
       {selectedSection && (
         <div className="shrink-0 border-t border-border bg-white px-6 py-4 space-y-3">
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground flex-1">매수 선택 (최대 {maxQty}매)</span>
+            <span className="text-sm text-muted-foreground flex-1">
+              매수 선택 (최대 {maxQty}매)
+            </span>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setZoneQuantity(Math.max(1, zoneQuantity - 1))}
@@ -64,11 +73,18 @@ export function ZoneSelectView() {
               <button
                 onClick={() =>
                   setZoneQuantity(
-                    Math.min(maxQty, Math.min(selectedSection.remainingSeats, zoneQuantity + 1)),
+                    Math.min(
+                      maxQty,
+                      Math.min(
+                        selectedSection.remainingSeats,
+                        zoneQuantity + 1,
+                      ),
+                    ),
                   )
                 }
                 disabled={
-                  zoneQuantity >= maxQty || zoneQuantity >= selectedSection.remainingSeats
+                  zoneQuantity >= maxQty ||
+                  zoneQuantity >= selectedSection.remainingSeats
                 }
                 className="size-8 rounded-md border border-border flex items-center justify-center hover:bg-accent disabled:opacity-40 transition-colors"
               >

@@ -217,6 +217,7 @@ export function BookingProvider({ eventId, children }: BookingProviderProps) {
     queryKey: ["booking-windows", eventId, showId],
     queryFn: () => getBookingWindows(eventId, showId!),
     enabled: showId !== null,
+    staleTime: 5 * 60 * 1000, // 5분간 stale 상태로 전환 안 함 → 자동 refetch 방지
   });
 
   // Fetch section pricing (API #30)

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { cn } from "@/shared/lib/utils";
 import { formatPrice } from "@/shared/lib/format";
 import type { Section } from "@/shared/types";
@@ -10,7 +11,7 @@ interface ZoneCardProps {
   onSelect: () => void;
 }
 
-export function ZoneCard({ section, isSelected, onSelect }: ZoneCardProps) {
+function ZoneCardBase({ section, isSelected, onSelect }: ZoneCardProps) {
   const isSoldOut = section.remainingSeats === 0;
 
   return (
@@ -22,8 +23,8 @@ export function ZoneCard({ section, isSelected, onSelect }: ZoneCardProps) {
         isSelected
           ? "border-primary bg-primary/5 ring-1 ring-primary"
           : isSoldOut
-          ? "border-border bg-muted/50 opacity-60 cursor-not-allowed"
-          : "border-border bg-white hover:border-primary/40 hover:bg-primary/3 cursor-pointer",
+            ? "border-border bg-muted/50 opacity-60 cursor-not-allowed"
+            : "border-border bg-white hover:border-primary/40 hover:bg-primary/3 cursor-pointer",
       )}
     >
       <div className="text-sm font-semibold">{section.name}</div>
@@ -31,8 +32,12 @@ export function ZoneCard({ section, isSelected, onSelect }: ZoneCardProps) {
         {formatPrice(section.price)}
       </div>
       <div className="text-xs text-muted-foreground mt-1">
-        {isSoldOut ? "매진" : `잔여 ${section.remainingSeats.toLocaleString()}매`}
+        {isSoldOut
+          ? "매진"
+          : `잔여 ${section.remainingSeats.toLocaleString()}매`}
       </div>
     </button>
   );
 }
+
+export const ZoneCard = memo(ZoneCardBase);
