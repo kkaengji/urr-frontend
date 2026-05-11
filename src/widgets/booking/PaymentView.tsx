@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { CircleAlert } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { useBooking } from "@/features/booking/model/BookingContext";
@@ -12,7 +12,7 @@ import { parseSeatDisplay } from "@/shared/lib/format";
 import { bookTicket } from "@/features/booking/api/bookTicket";
 import { cancelReservation } from "@/features/booking/api/cancelReservation";
 import { createPaymentRecord } from "@/features/payment/api/createPaymentRecord";
-import { getTossPayments, TOSS_METHOD_MAP, TOSS_CLIENT_KEY } from "@/features/payment/lib/toss";
+import { TOSS_CLIENT_KEY, type TossWidgets } from "@/features/payment/lib/tossWidget";
 import { ApiError } from "@/shared/api/client";
 import {
   useBookingStore,
@@ -22,7 +22,7 @@ import { useBookingSession } from "@/features/booking/model/useBookingSession";
 import type { ConfirmationData } from "@/shared/types";
 import { PaymentProcessingOverlay } from "./PaymentProcessingOverlay";
 import { PaymentConfirmPhase } from "./PaymentConfirmPhase";
-import { PaymentFormPhase } from "./PaymentFormPhase";
+import { TossWidgetPhase } from "./TossWidgetPhase";
 
 type PaymentPhase =
   | "confirm-seats"
@@ -56,18 +56,16 @@ export function PaymentView() {
 
   const [phase, setPhase] = useState<PaymentPhase>("confirm-seats");
   const [deliveryMethod, setDeliveryMethod] = useState<"mobile" | "onsite">("mobile");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const retryTimer = useSeatTimer(60);
+  const widgetRef = useRef<TossWidgets | null>(null);
 
   const {
     buyerName,
     buyerPhone,
-    selectedMethod,
-    termsAgreed,
     isFormValid,
     handleNameChange,
     handlePhoneChange,
-    setSelectedMethod,
-    toggleTerms,
   } = usePaymentForm({
     initialName: currentUser?.name,
     initialPhone: currentUser?.phoneNumber,
@@ -120,10 +118,11 @@ export function PaymentView() {
 
   const handleSubmitPayment = useCallback(async () => {
     if (!selectedDate) return;
-    setPhase("processing");
+    // setPhase("processing")을 여기서 호출하지 않는다.
+    // TossWidgetPhase가 언마운트되면 widgetRef가 무효화되어 requestPayment 호출이 실패한다.
+    setIsSubmitting(true);
 
     try {
-      // zone/performance: 가상 좌석 ID 생성, seat-map: 실제 좌석 ID
       const seatIdsForBooking = isZoneOrPerformance
         ? Array.from({ length: zoneQuantity }, (_, i) => `zone-${selectedSectionId}-${i + 1}`)
         : selectedSeatIds;
@@ -191,25 +190,25 @@ export function PaymentView() {
         confirmationData,
         String(currentUser?.userId ?? ""),
       );
+      setConfirmationData(confirmationData);
 
-      // 데모 모드: Toss 키 없으면 결제창 없이 바로 완료
-      if (!TOSS_CLIENT_KEY) {
-        setConfirmationData(confirmationData);
-        transitionTo("confirmation");
-        return;
+      if (TOSS_CLIENT_KEY && widgetRef.current) {
+        // 위젯이 살아있는 상태에서 requestPayment 호출
+        // TossPay: 페이지 리디렉트 발생 → /booking/complete에서 확인
+        // 그 외 결제수단: await 완료 후 아래 transitionTo 실행
+        await widgetRef.current.requestPayment({
+          orderId: reservation.orderId,
+          orderName: `${event?.title ?? "티켓"} ${seatCount}매`,
+          successUrl: `${window.location.origin}/booking/complete`,
+          failUrl: `${window.location.origin}${window.location.pathname}`,
+          customerName: buyerName,
+          customerMobilePhone: buyerPhone.replace(/-/g, ""),
+        });
       }
 
-      const tossPayments = await getTossPayments();
-      await tossPayments.requestPayment(TOSS_METHOD_MAP[selectedMethod], {
-        amount: total,
-        orderId: reservation.orderId,
-        orderName: `${event?.title ?? "티켓"} ${seatCount}매`,
-        successUrl: `${window.location.origin}/booking/complete`,
-        failUrl: `${window.location.origin}${window.location.pathname}?paymentFail=1`,
-        customerName: buyerName,
-        customerMobilePhone: buyerPhone.replace(/-/g, ""),
-      });
+      transitionTo("confirmation");
     } catch (err) {
+      setIsSubmitting(false);
       bookingSession.clear();
       if (err instanceof ApiError && err.status === 409) {
         setReservations([], "");
@@ -230,7 +229,6 @@ export function PaymentView() {
     currentUser,
     buyerName,
     buyerPhone,
-    selectedMethod,
     event,
     seatCount,
     section,
@@ -295,7 +293,7 @@ export function PaymentView() {
 
   if (phase === "payment-form") {
     return (
-      <PaymentFormPhase
+      <TossWidgetPhase
         event={event}
         selectedDate={selectedDate}
         seatDisplayNames={seatDisplayNames}
@@ -305,18 +303,17 @@ export function PaymentView() {
         total={total}
         buyerName={buyerName}
         buyerPhone={buyerPhone}
-        selectedMethod={selectedMethod}
-        termsAgreed={termsAgreed}
         isFormValid={isFormValid}
         showDeliveryMethod={flowType === "performance"}
         deliveryMethod={deliveryMethod}
         onBack={handleBackToConfirm}
+        onCancel={handleCancel}
         onNameChange={handleNameChange}
         onPhoneChange={handlePhoneChange}
-        onMethodChange={setSelectedMethod}
-        onToggleTerms={toggleTerms}
+        isSubmitting={isSubmitting}
         onSubmit={handleSubmitPayment}
         onDeliveryMethodChange={setDeliveryMethod}
+        onWidgetReady={(w) => { widgetRef.current = w; }}
       />
     );
   }

@@ -64,7 +64,7 @@ export function PaymentFormPhase({
     <div className="fixed inset-0 z-40">
       <div className="fixed inset-0 bg-black/50" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <div className="w-full max-w-[680px] rounded-2xl bg-white shadow-xl animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]">
+        <div className="w-full max-w-170 rounded-2xl bg-white shadow-xl animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]">
           {/* Header */}
           <div className="px-6 py-4 border-b border-border shrink-0">
             <div className="flex items-center gap-3">
@@ -141,7 +141,9 @@ export function PaymentFormPhase({
                             className="accent-primary"
                           />
                           <span className="text-sm font-medium">
-                            {method === "mobile" ? "모바일 티켓 (앱 내 QR코드)" : "현장 수령"}
+                            {method === "mobile"
+                              ? "모바일 티켓 (앱 내 QR코드)"
+                              : "현장 수령"}
                           </span>
                         </label>
                       ))}
@@ -191,7 +193,10 @@ export function PaymentFormPhase({
                 {selectedMethod !== "card" && (
                   <p className="text-xs text-muted-foreground mt-3">
                     결제하기 버튼을 누르면{" "}
-                    {PAYMENT_METHODS.find((m) => m.id === selectedMethod)?.label}{" "}
+                    {
+                      PAYMENT_METHODS.find((m) => m.id === selectedMethod)
+                        ?.label
+                    }{" "}
                     결제 창이 열립니다.
                   </p>
                 )}
@@ -258,7 +263,9 @@ export function PaymentFormPhase({
                 {hasUserTierWindow && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">수수료</span>
-                    <span className="tabular-nums">{formatPrice(feeTotal)}</span>
+                    <span className="tabular-nums">
+                      {formatPrice(feeTotal)}
+                    </span>
                   </div>
                 )}
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { X } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Separator } from "@/shared/ui/separator";
 import { PriceDisplay } from "@/shared/ui/PriceDisplay";
@@ -43,10 +44,20 @@ export function PaymentConfirmPhase({
         <div className="w-full max-w-[480px] rounded-2xl bg-white shadow-xl animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[80vh]">
           {/* Header */}
           <div className="px-6 py-4 border-b border-border shrink-0">
-            <h2 className="text-lg font-bold">좌석 확인</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              선택하신 좌석 정보를 확인해주세요
-            </p>
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-lg font-bold">좌석 확인</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  선택하신 좌석 정보를 확인해주세요
+                </p>
+              </div>
+              <button
+                onClick={onCancel}
+                className="p-1 rounded-md hover:bg-accent transition-colors -mr-1"
+              >
+                <X size={18} className="text-muted-foreground" />
+              </button>
+            </div>
           </div>
 
           {/* Content */}

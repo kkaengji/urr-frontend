@@ -7,27 +7,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "필수 파라미터 누락" }, { status: 400 });
   }
 
-  const secretKey = process.env.TOSS_SECRET_KEY;
-  if (!secretKey) {
-    return NextResponse.json({ message: "서버 설정 오류" }, { status: 500 });
-  }
+  // 데모 모드: 실제 Toss 승인 API 대신 mock 응답 반환
+  await new Promise((r) => setTimeout(r, 300));
 
-  const encoded = Buffer.from(`${secretKey}:`).toString("base64");
-
-  const tossRes = await fetch("https://api.tosspayments.com/v1/payments/confirm", {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${encoded}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ paymentKey, orderId, amount }),
+  return NextResponse.json({
+    paymentKey,
+    orderId,
+    amount,
+    method: "토스페이",
+    status: "DONE",
+    approvedAt: new Date().toISOString(),
   });
-
-  const data = await tossRes.json();
-
-  if (!tossRes.ok) {
-    return NextResponse.json(data, { status: tossRes.status });
-  }
-
-  return NextResponse.json(data);
 }
