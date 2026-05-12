@@ -197,7 +197,7 @@ export function TossWidgetPhase({
             </div>
 
             {/* Right: order summary */}
-            <div className="w-[240px] shrink-0 px-5 py-5 bg-muted/30 overflow-y-auto">
+            <div className="w-60 shrink-0 px-5 py-5 bg-muted/30 overflow-y-auto">
               <h3 className="text-sm font-bold mb-3">주문 상품</h3>
 
               <div className="mb-3">

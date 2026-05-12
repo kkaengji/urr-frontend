@@ -13,8 +13,8 @@ import { ConfirmationView } from "./ConfirmationView";
 function RightMainSkeleton() {
   return (
     <div className="h-full p-6 flex flex-col gap-4">
-      <Skeleton className="flex-[3] w-full rounded-xl" />
-      <div className="flex-[2] space-y-3">
+      <Skeleton className="flex-3 w-full rounded-xl" />
+      <div className="flex-2 space-y-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <Skeleton key={i} className="w-full h-8" />
         ))}
@@ -35,7 +35,10 @@ export function RightMain() {
           <IdleView />
         </div>
       ) : bookingState === "seats-section" ? (
-        <div key="seats-section" className="h-full animate-in fade-in duration-200">
+        <div
+          key="seats-section"
+          className="h-full animate-in fade-in duration-200"
+        >
           {flowType === "zone" ? (
             <ZoneSelectView />
           ) : flowType === "performance" ? (
@@ -45,7 +48,10 @@ export function RightMain() {
           )}
         </div>
       ) : bookingState === "seats-individual" ? (
-        <div key="seats-individual" className="h-full animate-in fade-in duration-200">
+        <div
+          key="seats-individual"
+          className="h-full animate-in fade-in duration-200"
+        >
           {flowType === "performance" ? <GradePicker /> : <UnifiedSeatView />}
         </div>
       ) : bookingState === "payment" ? (
@@ -53,7 +59,10 @@ export function RightMain() {
           {flowType === "seat-map" && <UnifiedSeatView />}
         </div>
       ) : bookingState === "confirmation" ? (
-        <div key="confirmation" className="h-full animate-in fade-in duration-200">
+        <div
+          key="confirmation"
+          className="h-full animate-in fade-in duration-200"
+        >
           <ConfirmationView />
         </div>
       ) : null}

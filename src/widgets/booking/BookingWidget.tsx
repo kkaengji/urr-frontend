@@ -1,7 +1,10 @@
 "use client";
 
 import { CircleAlert } from "lucide-react";
-import { BookingProvider, useBooking } from "@/features/booking/model/BookingContext";
+import {
+  BookingProvider,
+  useBooking,
+} from "@/features/booking/model/BookingContext";
 import { Button } from "@/shared/ui/button";
 import { LeftPanel } from "./LeftPanel";
 import { RightMain } from "./RightMain";
@@ -20,7 +23,7 @@ function PaymentFailedModal() {
     <div className="fixed inset-0 z-50">
       <div className="fixed inset-0 bg-black/50" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <div className="w-full max-w-[400px] rounded-xl bg-white shadow-lg p-8 animate-in fade-in zoom-in-95 duration-200">
+        <div className="w-full max-w-100 rounded-xl bg-white shadow-lg p-8 animate-in fade-in zoom-in-95 duration-200">
           <div className="flex flex-col items-center gap-4 text-center">
             <CircleAlert size={48} className="text-destructive" />
             <h3 className="text-lg font-bold">결제에 실패했습니다</h3>

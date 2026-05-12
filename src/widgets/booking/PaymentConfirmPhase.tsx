@@ -41,7 +41,7 @@ export function PaymentConfirmPhase({
     <div className="fixed inset-0 z-40">
       <div className="fixed inset-0 bg-black/50" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <div className="w-full max-w-[480px] rounded-2xl bg-white shadow-xl animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[80vh]">
+        <div className="w-full max-w-120 rounded-2xl bg-white shadow-xl animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[80vh]">
           {/* Header */}
           <div className="px-6 py-4 border-b border-border shrink-0">
             <div className="flex items-start justify-between">

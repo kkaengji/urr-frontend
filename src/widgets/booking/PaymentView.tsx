@@ -12,7 +12,10 @@ import { parseSeatDisplay } from "@/shared/lib/format";
 import { bookTicket } from "@/features/booking/api/bookTicket";
 import { cancelReservation } from "@/features/booking/api/cancelReservation";
 import { createPaymentRecord } from "@/features/payment/api/createPaymentRecord";
-import { TOSS_CLIENT_KEY, type TossWidgets } from "@/features/payment/lib/tossWidget";
+import {
+  TOSS_CLIENT_KEY,
+  type TossWidgets,
+} from "@/features/payment/lib/tossWidget";
 import { ApiError } from "@/shared/api/client";
 import {
   useBookingStore,
@@ -55,7 +58,9 @@ export function PaymentView() {
   const bookingSession = useBookingSession();
 
   const [phase, setPhase] = useState<PaymentPhase>("confirm-seats");
-  const [deliveryMethod, setDeliveryMethod] = useState<"mobile" | "onsite">("mobile");
+  const [deliveryMethod, setDeliveryMethod] = useState<"mobile" | "onsite">(
+    "mobile",
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const retryTimer = useSeatTimer(60);
   const widgetRef = useRef<TossWidgets | null>(null);
@@ -94,11 +99,20 @@ export function PaymentView() {
   const seatDisplayNames = useMemo(() => {
     if (isZoneOrPerformance) {
       if (!selectedSectionId) return [];
-      return Array.from({ length: zoneQuantity }, (_, i) => `${selectedSectionId} ${i + 1}번`);
+      return Array.from(
+        { length: zoneQuantity },
+        (_, i) => `${selectedSectionId} ${i + 1}번`,
+      );
     }
     if (!section) return [];
     return selectedSeatIds.map((id) => parseSeatDisplay(id, section.name));
-  }, [isZoneOrPerformance, selectedSectionId, zoneQuantity, section, selectedSeatIds]);
+  }, [
+    isZoneOrPerformance,
+    selectedSectionId,
+    zoneQuantity,
+    section,
+    selectedSeatIds,
+  ]);
 
   // Watch retry timer expiry
   useEffect(() => {
@@ -124,7 +138,10 @@ export function PaymentView() {
 
     try {
       const seatIdsForBooking = isZoneOrPerformance
-        ? Array.from({ length: zoneQuantity }, (_, i) => `zone-${selectedSectionId}-${i + 1}`)
+        ? Array.from(
+            { length: zoneQuantity },
+            (_, i) => `zone-${selectedSectionId}-${i + 1}`,
+          )
         : selectedSeatIds;
 
       const reservation = await bookTicket({
@@ -313,7 +330,9 @@ export function PaymentView() {
         isSubmitting={isSubmitting}
         onSubmit={handleSubmitPayment}
         onDeliveryMethodChange={setDeliveryMethod}
-        onWidgetReady={(w) => { widgetRef.current = w; }}
+        onWidgetReady={(w) => {
+          widgetRef.current = w;
+        }}
       />
     );
   }
@@ -327,7 +346,7 @@ export function PaymentView() {
       <div className="fixed inset-0 z-40">
         <div className="fixed inset-0 bg-black/50" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <div className="w-full max-w-[400px] rounded-xl bg-white shadow-lg p-8 animate-in fade-in zoom-in-95 duration-200">
+          <div className="w-full max-w-100 rounded-xl bg-white shadow-lg p-8 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex flex-col items-center gap-4 text-center">
               <CircleAlert size={48} className="text-destructive" />
               <h3 className="text-lg font-bold">이미 선점된 좌석입니다</h3>
@@ -351,7 +370,7 @@ export function PaymentView() {
       <div className="fixed inset-0 z-40">
         <div className="fixed inset-0 bg-black/50" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <div className="w-full max-w-[400px] rounded-xl bg-white shadow-lg p-8 animate-in fade-in zoom-in-95 duration-200">
+          <div className="w-full max-w-100 rounded-xl bg-white shadow-lg p-8 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex flex-col items-center gap-4 text-center">
               <CircleAlert size={48} className="text-destructive" />
               <h3 className="text-lg font-bold">좌석이 해제되었습니다</h3>
@@ -372,11 +391,13 @@ export function PaymentView() {
     <div className="fixed inset-0 z-40">
       <div className="fixed inset-0 bg-black/50" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <div className="w-full max-w-[400px] rounded-xl bg-white shadow-lg p-8 animate-in fade-in zoom-in-95 duration-200">
+        <div className="w-full max-w-100 rounded-xl bg-white shadow-lg p-8 animate-in fade-in zoom-in-95 duration-200">
           <div className="flex flex-col items-center gap-4 text-center">
             <CircleAlert size={48} className="text-destructive" />
             <h3 className="text-lg font-bold">결제에 실패했습니다</h3>
-            <p className="text-sm text-muted-foreground">카드 승인이 거절되었습니다.</p>
+            <p className="text-sm text-muted-foreground">
+              카드 승인이 거절되었습니다.
+            </p>
             <div className="px-4 py-3 rounded-lg bg-muted/50 border border-border w-full">
               <p className="text-xs text-muted-foreground mb-2">
                 좌석이 60초간 유지됩니다. 다시 시도해주세요.
@@ -384,7 +405,11 @@ export function PaymentView() {
               <TimerDisplay seconds={retryTimer.secondsLeft} size="lg" />
             </div>
             <div className="flex gap-3 w-full pt-2">
-              <Button variant="ghost" className="flex-1" onClick={handleExitBooking}>
+              <Button
+                variant="ghost"
+                className="flex-1"
+                onClick={handleExitBooking}
+              >
                 예매 종료
               </Button>
               <Button className="flex-1" onClick={handleRetry}>
